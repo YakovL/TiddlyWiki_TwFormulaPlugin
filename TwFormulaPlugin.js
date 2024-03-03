@@ -57,12 +57,12 @@ var math_lib = libs[config.options.txtMathLib]
     var UseInnerHTML = (config.browser.isOpera || config.browser.isIE && ie9RegExp.test(config.browser.ieVersion[1]));
 
 // a helper
-var loadLib = function(fullPath,config)
+var loadLib = function(path, config)
 {
     // create the script element and add it
     var script = document.createElement("script");
     script.type = "text/javascript";
-    script.src = fullPath;
+    script.src = path;
     
     if(UseInnerHTML)
         script.innerHTML = config;
@@ -72,11 +72,11 @@ var loadLib = function(fullPath,config)
 
     return script;
 };
-var loadCSS = function(fullPath)
+var loadCSS = function(path)
 {
-    jQuery("head").append("<link rel='stylesheet' type='text/css' href='"+fullPath+"' />");
+    jQuery("head").append("<link rel='stylesheet' type='text/css' href='" + path + "' />");
 /*	var stylesheet = document.createElement('link');
-    stylesheet.href = fullPath;
+    stylesheet.href = path;
     stylesheet.rel = 'stylesheet';
     stylesheet.type = 'text/css';
     document.getElementsByTagName('head')[0].appendChild(stylesheet);
@@ -103,7 +103,7 @@ switch(math_lib)
         '});' +
         'MathJax.Hub.Startup.onload();';
 
-        var script = loadLib(mathJaxPath + "MathJax.js",mjconfig);
+        var script = loadLib(mathJaxPath + "MathJax.js", mjconfig);
     break;
     case libs.KaTeX:
         var kaTeXpath = "https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/"
@@ -116,9 +116,9 @@ switch(math_lib)
     case libs.MathQuill:
         var mathQuillPath = "jsLibs/mathquill/";
         loadLib(mathQuillPath + "mathquill-0.10.0-min.js");
-        var loadMQ = function(){ try{
+        var loadMQ = function() { try{
             config.extensions.mathQuill = MathQuill.getInterface(2);
-        }catch(e){ setTimeout(loadMQ,50); } };
+        } catch(e) { setTimeout(loadMQ, 50) } };
         loadMQ();
         loadCSS(mathQuillPath + "mathquill-0.10.0-min.css");
         mathQuillCssExtras = // div = outline formulae
@@ -134,7 +134,7 @@ switch(math_lib)
 //	   Define helpers for wikitext editing through WYSIWYG
 // =================================================================
 
-var changeWikiText = function(sourceTiddler,startPosition,oldLatexLength,openWrapper,closeWrapper,newLatex)
+var changeWikiText = function(sourceTiddler, startPosition, oldLatexLength, openWrapper, closeWrapper, newLatex)
 {
     // prepare texts and positions
     var noTiddlerMsg = "changeWikiText: no sourceTiddler detected";
@@ -143,11 +143,12 @@ var changeWikiText = function(sourceTiddler,startPosition,oldLatexLength,openWra
 
     var oldLenght = openWrapper.length + oldLatexLength + closeWrapper.length;
 
-    sourceTiddler.text = sourceTiddler.text.substr(0,startPosition) +
+    sourceTiddler.text = sourceTiddler.text.substr(0, startPosition) +
         openWrapper + newLatex + closeWrapper +
         sourceTiddler.text.substr(startPosition + oldLenght);
 
-    store.saveTiddler(sourceTiddler); // recalcs slices, notifies etc
+    // recalcs slices, notify, etc.
+    store.saveTiddler(sourceTiddler);
 };
 
 // =================================================================
@@ -170,7 +171,7 @@ config.formatterHelpers.mathFormatHelper = function(w) {
             latex = w.source.substr(w.matchStart, matched.index + matched[0].length - w.matchStart);
 
 // pre-parsing can be done here
-latex = latex.replace(/\\?π/mg,"\\pi").replace("×","\\times").replace("∞","\\infty");
+latex = latex.replace(/\\?π/mg, "\\pi").replace("×", "\\times").replace("∞", "\\infty");
 
         if(UseInnerHTML)
             e.innerHTML = latex;
@@ -181,11 +182,15 @@ latex = latex.replace(/\\?π/mg,"\\pi").replace("×","\\times").replace("∞","\
             M.parseMath(e);
         if(math_lib == libs.KaTeX)
             try {
-                katex.render(latex,e,{ displayMode: !this.inline,
-                    throwOnError: false, errorColor: "#ff0000" });
+                katex.render(latex, e, {
+                    displayMode: !this.inline,
+                    throwOnError: false,
+                    errorColor: "#ff0000"
+                });
             } catch(e) {
                 if(!(e.message == "katex is not defined"))
-                    console.log("katex exception:");console.log(e);
+                    console.log("katex exception:");
+                console.log(e);
             }
         if(math_lib == libs.MathQuill)
         { try{
@@ -205,12 +210,12 @@ latex = latex.replace(/\\?π/mg,"\\pi").replace("×","\\times").replace("∞","\
                 startPos = w.matchStart,
                 openWrapper = this.openWrapper,
                 closeWrapper = this.closeWrapper;
-            jQuery(e).keydown(function(e){
+            jQuery(e).keydown(function(e) {
                 if(e.which == 13) // on press enter, apply changes
-                    changeWikiText(tid,startPos,latex.length, openWrapper,closeWrapper,mqEditor.latex())
+                    changeWikiText(tid, startPos, latex.length, openWrapper, closeWrapper, mqEditor.latex())
 
             });
-        }catch(e){ console.log("MathQuill formatter: "+e.message); } }
+        } catch(e) { console.log("MathQuill formatter: " + e.message) } }
 
         w.nextMatch = endRegExp.lastIndex;
     }
@@ -303,9 +308,9 @@ var backslashFormatters = [
         name: "escape",
         match: "\\\\.",
         handler: function(w) {
-            var escapedSymbol = w.source.substr(w.matchStart+1,1);
+            var escapedSymbol = w.source.substr(w.matchStart + 1, 1);
             w.output.appendChild(document.createTextNode(escapedSymbol));
-            w.nextMatch = w.matchStart+2;
+            w.nextMatch = w.matchStart + 2; // 2 = length of \.
         }
     }
 ];
@@ -316,10 +321,9 @@ if(formatter) formatter = new Formatter(config.formatters)
 
 if(math_lib == libs.MathJax) {
     old_wikify = wikify;
-    wikify = function(source,output,highlightRegExp,tiddler) {
-        old_wikify.apply(this,arguments);
-        if(window.MathJax)
-            MathJax.Hub.Queue(["Typeset",MathJax.Hub,output]);
+    wikify = function(source, output, highlightRegExp, tiddler) {
+        old_wikify.apply(this, arguments);
+        if(window.MathJax) MathJax.Hub.Queue(["Typeset", MathJax.Hub, output]);
     };
 }
 
@@ -328,8 +332,8 @@ if(math_lib == libs.MathJax) {
 // =================================================================
 
 if(math_lib == libs.jqMath)
-    setStylesheet(store.getTiddlerText("JQMath.css"),"jqMathStyles");
+    setStylesheet(store.getTiddlerText("JQMath.css"), "jqMathStyles");
 if(math_lib == libs.MathQuill)
-    setStylesheet(mathQuillCssExtras,"mathQuillCssExtras");
+    setStylesheet(mathQuillCssExtras, "mathQuillCssExtras");
 })();
 //}}}
