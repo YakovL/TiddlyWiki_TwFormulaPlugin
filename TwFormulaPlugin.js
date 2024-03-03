@@ -310,7 +310,9 @@ var backslashFormatters = [
     }
 ];
 
-config.formatters = config.formatters.concat(mainMathFormatters,backslashFormatters);
+config.formatters = config.formatters.concat(mainMathFormatters, backslashFormatters)
+// if the plugin is loaded via TIFP or other async means, formatter may be set already
+if(formatter) formatter = new Formatter(config.formatters)
 
 if(math_lib == libs.MathJax) {
     old_wikify = wikify;
