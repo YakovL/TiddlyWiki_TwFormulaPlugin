@@ -1,16 +1,20 @@
 /***
 |Name       |TwFormulaPlugin|
 |Description|Render beautiful formulas using LaTeX syntax in wrappers like {{{$$...$$}}}. Plugin supports different libraries for that (MathJax, KaTeX, jqMath, MathQuill) – the supported LaTeX subset and some features depend on the selected library (MathQuill provides WYSIWYGish editing) {{DDnc{''retest''}}}|
-|Version    |0.5.9|
+|Version    |0.5.10|
 |Source     ||
 |Demo       |http://yakovlitvin.pro/TW/pre-releases/TwFormulaPlugin/#TwFormulaePlugin|
 |Previous contributors|Forked from ~PluginMathJax v1.3, by an anonymous author (called themselves "[[Canada East|http://tiddlywiki.canada-east.ca/]]"); jqMath was added thanks to [[this|https://groups.google.com/forum/#!topic/tiddlywiki/PNXaylx1HRY]] thread and the prototype provied by Eric Schulman|
 |Notes      |The plugin was pre-released as ~TwFormula''e''Plugin, but the name was simplified for the release. It still populates {{{version.extensions.TwFormulaePlugin}}} for the "install only once" functionality.|
 !!!Installation and configuring
-# install the plugin as usual (copy with the {{{systemConfig}}} tag, reload)
-# if you're ok with using ~KaTeX, download the latest [[release|https://github.com/KaTeX/KaTeX/releases]], unpack all the files into {{{./jsLibs/KaTeX/}}} (so that if your TW is {{{folder/TW.html}}}, the katex.min.js, for instance, is in {{{folder/jsLibs/KaTeX/katex.min.js}}}; same for {{{katex.min.css}}}, etc) {{PoGc{can we use CDN instead?}}}, and reload your TW
-# if you want to use another supported library, put one of the {{{libs}}} listed in code here: <<option txtMathLib>> {{DDnc{implement a select for an option macro instead}}}, _ {{DDnc{where to get the files, where to put}}}, reload TW (this is applied on startup)
-# 
+Install the plugin as usual (copy with the {{{systemConfig}}} tag, reload). By default, it will use ~KaTeX from a CDN (remote server).
+
+//If you'd like to load ~KaTeX from the another source// (for instance, from a local folder), download the latest [[release|https://github.com/KaTeX/KaTeX/releases]], unpack all the files into a folder, like {{{./jsLibs/KaTeX/}}} (so that if your TW is {{{folder/TW.html}}}, the katex.min.js, for instance, is in {{{folder/jsLibs/KaTeX/katex.min.js}}}; same for {{{katex.min.css}}}, etc), and change {{{kaTeXpath}}} in this code to that path or url ({{{jsLibs/KaTeX/}}} in this case).
+
+//If you'd like to use another supported library,//
+# put one of the {{{libs}}} listed in code here: <<option txtMathLib>> {{DDnc{implement a select for an option macro instead}}};
+# get the files from _ {{DDnc{explain, where}}}, put them in _ {{DDnc{explain, where}}};
+# reload TW (this is applied on startup).
 
 !!!Usage and examples
 The plugin introduces several formatters to write math. For instance $a^2 + b^2$ is an inline formula, which can be written as {{{$ a^2 + b^2 $}}} and {{{\( a^2 + b^2 \)}}} (spaces are optional: {{{$a^2 + b^2$}}} will produce the same result). To write an ordinary {{{$}}}, write {{{\$}}} {{DDnc{make optional backward compatibility (disabling .. formatter)?}}}
@@ -102,7 +106,8 @@ switch(math_lib)
         var script = loadLib(mathJaxPath + "MathJax.js",mjconfig);
     break;
     case libs.KaTeX:
-        var kaTeXpath = "jsLibs/KaTeX/";
+        var kaTeXpath = "https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/"
+        // var kaTeXpath = "jsLibs/KaTeX/"
         loadLib(kaTeXpath + "katex.min.js"); // jQuery.getScript requires xhr, so won't work locally (through file://)
         // http://stackoverflow.com/questions/7718935/load-scripts-asynchronously
 
