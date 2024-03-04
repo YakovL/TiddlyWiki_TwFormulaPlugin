@@ -53,8 +53,8 @@ var math_lib = libs[config.options.txtMathLib]
     }
     version.extensions.TwFormulaePlugin = { installed: true }
 
-    var ie9RegExp = /^9\./;
-    var UseInnerHTML = (config.browser.isOpera || config.browser.isIE && ie9RegExp.test(config.browser.ieVersion[1]));
+    var ie9RegExp = /^9\./
+    var UseInnerHTML = (config.browser.isOpera || config.browser.isIE && ie9RegExp.test(config.browser.ieVersion[1]))
 
 // a helper
 var loadLib = function(path, config)
@@ -70,17 +70,18 @@ var loadLib = function(path, config)
 
     document.getElementsByTagName("head")[0].appendChild(script);
 
-    return script;
+    return script
 };
 var loadCSS = function(path)
 {
     jQuery("head").append("<link rel='stylesheet' type='text/css' href='" + path + "' />");
-/*	var stylesheet = document.createElement('link');
+/*	// without jQuery: https://stackoverflow.com/a/5186760/3995261
+    var stylesheet = document.createElement('link');
     stylesheet.href = path;
     stylesheet.rel = 'stylesheet';
     stylesheet.type = 'text/css';
     document.getElementsByTagName('head')[0].appendChild(stylesheet);
-*/	// http://stackoverflow.com/questions/5186638/how-to-asynchronously-load-css-using-jquery
+*/
 };
 
 // =================================================================
@@ -103,7 +104,7 @@ switch(math_lib)
         '});' +
         'MathJax.Hub.Startup.onload();';
 
-        var script = loadLib(mathJaxPath + "MathJax.js", mjconfig);
+        loadLib(mathJaxPath + "MathJax.js", mjconfig)
     break;
     case libs.KaTeX:
         var kaTeXpath = "https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/"
@@ -137,18 +138,17 @@ switch(math_lib)
 var changeWikiText = function(sourceTiddler, startPosition, oldLatexLength, openWrapper, closeWrapper, newLatex)
 {
     // prepare texts and positions
-    var noTiddlerMsg = "changeWikiText: no sourceTiddler detected";
-    if(!sourceTiddler)
-        return console.log(noTiddlerMsg);
+    var noTiddlerMsg = "changeWikiText: no sourceTiddler detected"
+    if(!sourceTiddler) return console.log(noTiddlerMsg)
 
-    var oldLenght = openWrapper.length + oldLatexLength + closeWrapper.length;
+    var oldLenght = openWrapper.length + oldLatexLength + closeWrapper.length
 
     sourceTiddler.text = sourceTiddler.text.substr(0, startPosition) +
         openWrapper + newLatex + closeWrapper +
-        sourceTiddler.text.substr(startPosition + oldLenght);
+        sourceTiddler.text.substr(startPosition + oldLenght)
 
     // recalcs slices, notify, etc.
-    store.saveTiddler(sourceTiddler);
+    store.saveTiddler(sourceTiddler)
 };
 
 // =================================================================
@@ -224,8 +224,9 @@ latex = latex.replace(/\\?π/mg, "\\pi").replace("×", "\\times").replace("∞",
 var mainMathFormatters = [
     {
         name: "displayMath1",
-        openWrapper: "$$", // used for editing, would be nice to generate from it:
-                    // closeWrapper, match, terminator and termRegExp
+        // used for editing, would be nice to generate from it:
+        // closeWrapper, match, terminator and termRegExp
+        openWrapper: "$$",
         closeWrapper: "$$",
         match: "\\\$\\\$",
         terminator: "\\\$\\\$\\n?",
@@ -236,8 +237,9 @@ var mainMathFormatters = [
         handler: config.formatterHelpers.mathFormatHelper
     },{
         name: "inlineMath1",
-        openWrapper: "$", // used for editing, would be nice to generate from it:
-                    // closeWrapper, match, terminator and termRegExp
+        // used for editing, would be nice to generate from it:
+        // closeWrapper, match, terminator and termRegExp
+        openWrapper: "$",
         closeWrapper: "$",
         match: "\\\$", 
         terminator: "\\\$",
@@ -252,9 +254,10 @@ var mainMathFormatters = [
 var backslashFormatters = [
     {
         name: "inlineMath2",
-        openWrapper: "\\(",  // used for editing, would be nice to generate from
-                        // it: match
-        closeWrapper: "\\)", // ~ : terminator and termRegExp
+        // used for editing, would be nice to generate from it: match
+        openWrapper: "\\(",
+        // ~ : terminator and termRegExp
+        closeWrapper: "\\)",
         match: "\\\\\\\(",
         terminator: "\\\\\\\)",
         termRegExp: "\\\\\\\)",
@@ -264,9 +267,10 @@ var backslashFormatters = [
         handler: config.formatterHelpers.mathFormatHelper
     },{
         name: "displayMath2",
-        openWrapper: "\\[",  // used for editing, would be nice to generate from
-                        // it: match
-        closeWrapper: "\\]", // ~ : terminator and termRegExp
+        // used for editing, would be nice to generate from it: match
+        openWrapper: "\\[",
+        // ~ : terminator and termRegExp
+        closeWrapper: "\\]",
         match: "\\\\\\\[",
         terminator: "\\\\\\\]\\n?",
         termRegExp: "\\\\\\\]\\n?",
@@ -276,9 +280,10 @@ var backslashFormatters = [
         handler: config.formatterHelpers.mathFormatHelper
     },{
         name: "displayMath3",
-        openWrapper: "\\begin{equation}", // used for editing, would be nice to
-                            // generate from it: match
-        closeWrapper: "\\end{equation}",  // ~ : terminator and termRegExp
+        // used for editing, would be nice to generate from it: match
+        openWrapper: "\\begin{equation}",
+        // ~ : terminator and termRegExp
+        closeWrapper: "\\end{equation}",
         match: "\\\\begin\\{equation\\}",
         terminator: "\\\\end\\{equation\\}\\n?",
         termRegExp: "\\\\end\\{equation\\}\\n?",
@@ -290,9 +295,10 @@ var backslashFormatters = [
         // These can be nested.  e.g. \begin{equation} \begin{array}{ccc} \begin{array}{ccc} ...
 
         name: "displayMath4",
-        openWrapper: "\\begin{eqnarray}", // used for editing, would be nice to
-                            // generate from it: match
-        closeWrapper: "\\end{eqnarray}",  // ~ : terminator and termRegExp
+        // used for editing, would be nice to generate from it: match
+        openWrapper: "\\begin{eqnarray}",
+        // ~ : terminator and termRegExp
+        closeWrapper: "\\end{eqnarray}",
         match: "\\\\begin\\{eqnarray\\}",
         terminator: "\\\\end\\{eqnarray\\}\\n?",
         termRegExp: "\\\\end\\{eqnarray\\}\\n?",
@@ -308,9 +314,9 @@ var backslashFormatters = [
         name: "escape",
         match: "\\\\.",
         handler: function(w) {
-            var escapedSymbol = w.source.substr(w.matchStart + 1, 1);
-            w.output.appendChild(document.createTextNode(escapedSymbol));
-            w.nextMatch = w.matchStart + 2; // 2 = length of \.
+            var escapedCharacter = w.source.substr(w.matchStart + 1, 1)
+            w.output.appendChild(document.createTextNode(escapedCharacter))
+            w.nextMatch = w.matchStart + 2 // 2 = length of \.
         }
     }
 ];
@@ -320,20 +326,22 @@ config.formatters = config.formatters.concat(mainMathFormatters, backslashFormat
 if(formatter) formatter = new Formatter(config.formatters)
 
 if(math_lib == libs.MathJax) {
-    old_wikify = wikify;
+    old_wikify = wikify
     wikify = function(source, output, highlightRegExp, tiddler) {
-        old_wikify.apply(this, arguments);
-        if(window.MathJax) MathJax.Hub.Queue(["Typeset", MathJax.Hub, output]);
+        old_wikify.apply(this, arguments)
+        if(window.MathJax) MathJax.Hub.Queue(["Typeset", MathJax.Hub, output])
     };
 }
 
 // =================================================================
-//			     Add the stylings
+//			     Add the styles
 // =================================================================
 
-if(math_lib == libs.jqMath)
-    setStylesheet(store.getTiddlerText("JQMath.css"), "jqMathStyles");
-if(math_lib == libs.MathQuill)
-    setStylesheet(mathQuillCssExtras, "mathQuillCssExtras");
+switch(math_lib) {
+    case libs.jqMath:    setStylesheet(store.getTiddlerText("JQMath.css"), "jqMathStyles")
+        break;
+    case libs.MathQuill: setStylesheet(mathQuillCssExtras, "mathQuillCssExtras")
+        break;
+}
 })();
 //}}}
