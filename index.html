@@ -842,6 +842,7 @@ TwFormulaPlugin</pre>
 <div title="Intro" modifier="Yakov Litvin" created="202403031106" modified="202403031106">
 <pre>The most widely used format for writing math formulae is {{{LaTeX}}}. TwFormulaPlugin implements rendering math in TW using {{{LaTeX}}} and 3d party libraries. See examples:
 * [[Different types of formulae]]
+* [[Escaping, non-latin letters, numeration]]
 </pre>
 </div>
 <div title="Different types of formulae" modifier="Yakov Litvin" created="202403031106" modified="202403031106">
@@ -880,6 +881,22 @@ TwFormulaPlugin</pre>
 \nabla \cdot \vec{\mathbf{B}} &amp; = &amp; 0
 \end{eqnarray}\]
 Finally, while display equations look good for a page of samples, the ability to mix math and text in a paragraph is also important. This expression \(\sqrt{3x-1}+(1+x)^2\) is an example of an inline equation.  As you see, ~MathJax equations can be used this way as well, without unduly disturbing the spacing between lines.</pre>	
+</div>
+<div title="Escaping, non-latin letters, numeration" creator="Yakov Litvin" modifier="Yakov Litvin" created="201511051436" modified="202403040907" changecount="10">
+<pre>Escaping:
+* lunch \$7.53 (dollar char)
+* backslash char: \\
+
+Non-latin letters in formulas (font size should be correct):
+$${1 Н \over 2 м^2} = 0,5 Па$$
+$${1 N\over 2 m^2} = 0.5 Pa$$
+
+(Auto)numeration (uses {{{\begin{equation}...\end{equation}}}} inside {{{$$...$$}}}):
+$$\begin{equation}
+\operatorname{erfc}(x) =
+\frac{2}{\sqrt{\pi}} \int\limits_x^{\infty} e^{-t^2}\,dt =
+\frac{e^{-x^2}}{x\sqrt{\pi}}\sum_{n=0}^\infty (-1)^n \frac{(2n)!}{n!(2x)^{2n}}
+\end{equation}$$</pre>
 </div>
 <div title="SetCommonStylesPlugin" creator="Yakov Litvin" modifier="Yakov Litvin" created="201303231108" modified="202402061403" tags="systemConfig StyleSheet [[shared not by tag]]" changecount="187">
 <pre>/***
