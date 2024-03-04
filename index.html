@@ -881,6 +881,173 @@ TwFormulaPlugin</pre>
 \end{eqnarray}\]
 Finally, while display equations look good for a page of samples, the ability to mix math and text in a paragraph is also important. This expression \(\sqrt{3x-1}+(1+x)^2\) is an example of an inline equation.  As you see, ~MathJax equations can be used this way as well, without unduly disturbing the spacing between lines.</pre>	
 </div>
+<div title="SetCommonStylesPlugin" creator="Yakov Litvin" modifier="Yakov Litvin" created="201303231108" modified="202402061403" tags="systemConfig StyleSheet [[shared not by tag]]" changecount="187">
+<pre>/***
+|Version|1.7.0|
+***/
+//{{{
+// styling helpers
+var getStylesFromSection = function(sectionName) {
+	var css = store.getTiddlerText(&quot;SetCommonStylesPlugin##&quot;+sectionName,&quot;&quot;);
+	return css.replace(&quot;{{{&quot;,&quot;/&quot;+&quot;*{{{*&quot;+&quot;/&quot;).replace(&quot;}}}&quot;,&quot;/&quot;+&quot;*}}}*&quot;+&quot;/&quot;);
+};
+var setCssShadow = function(sectionName,shadowName) {
+	config.shadowTiddlers[shadowName] = getStylesFromSection(sectionName);
+	store.addNotification(shadowName, refreshStyles);
+
+	store.addNotification(&quot;ColorPalette&quot;,function(smth,doc) {
+		refreshStyles(shadowName,doc);
+	});
+};
+
+// set styles
+setCssShadow(&quot;Typographics&quot;,		&quot;CommonTypographicsStyleSheet&quot;);
+setCssShadow(&quot;Semantics&quot;,		&quot;CommonSemanticsStyleSheet&quot;);
+setCssShadow(&quot;Representation&quot;,		&quot;CommonRepresenationStyleSheet&quot;);
+setCssShadow(&quot;Representation tools&quot;,	&quot;CommonRepresToolsStyleSheet&quot;);
+//if(jQuery.browser.mozilla) // now done via CSS
+	setCssShadow(&quot;FireFox CSS&quot;,	&quot;FireFoxFixesStyleSheet&quot;);
+
+/*var csp_orig_wikify = wikify;
+wikify = function(source,output,highlightRegExp,tiddler) {
+	csp_orig_wikify.apply(this,arguments);
+// no longer needed, left as an example:
+	jQuery(&quot;.LimitGeneral&quot;).each(function(){
+		// avoid multiple wrapping because of ~ wikifications:
+		if(!jQuery(this.parentNode).hasClass(&quot;LimitGeneralWrap&quot;))
+			jQuery(this).wrap(&quot;&lt;span class='LimitGeneralWrap'&gt;&lt;/span&gt;&quot;);
+	});
+};*/
+// to get green underlined, add a wrapper with the NTermWrap class; apply the styling to both wrappers (.NTermWrap) and the element itself (.NTerm)
+//}}}
+// // hide message area on click elsewhere (useful for touchscreen devices)
+//{{{
+jQuery(document).on(&quot;click&quot;,function(e) {
+	if(!jQuery(e.target).closest('#messageArea').length) // click outside messageArea
+		clearMessage();
+	return true;
+});
+// prevent message from being closed by click on a saveChanges button
+if(!config.extensions.postponeMsg) {
+	config.extensions.postponeMsg = true;
+	config.extensions.orig_displayMessage = displayMessage;
+	displayMessage = function(a,b) {
+		var doDisplay = function() { config.extensions.orig_displayMessage(a,b); };
+		setTimeout(doDisplay,100);
+	};
+}
+//}}}
+/***
+!!!Typographics
+{{{
+#messageArea {
+	top: 1.5em; padding: 0.7em 1em;
+
+	max-height: calc(100vh - 5em);
+	max-width: calc(100vw - 4em);
+	overflow: auto;
+}
+
+.editor { line-height: 1.4em; }
+}}}
+!!!Typographics details
+* this section is meant to be incorporated to the core
+* messageArea: paddings enlarged; dimensions restricted not to go beyond page boundaries
+** {{DDn{padding-bottom &quot;doesn't work&quot; when the content is large.. change `box-sizing`?}}}
+** {{PoG{horizontal margin is ok; top should be removed; bottom – ...}}}
+** {{DDn{magic numbers 5em and 4em are not nice, though}}}
+** `#messageArea .button { background: inherit; }` – non-BEM selector here until we modify the core
+!!!Semantics
+{{{
+div[tags~=&quot;code&quot;] .editor, #tiddlerStyleSheet .editor,
+div[tags~=&quot;systemConfig&quot;] .editor, pre, code {
+	font-family: Consolas, monospace;
+}
+.viewer pre, .viewer code {
+	font-size: inherit;
+}
+
+.tiddler[tags~=&quot;notepad&quot;] textarea,
+.tiddler[tags~=&quot;notepad&quot;] .viewer {
+	font-family: Consolas, monospace;
+	white-space: pre;
+}
+
+.PoG, .PoGc	{ color: green; }
+
+.DDn, .DDnc	{ color: purple; }
+
+.FpG, .FpGc	{ color: #0000CC; }
+
+.PoGc:before, .DDnc:before, .FpGc:before,
+.c:before	{ content: &quot;[&quot;; color: [[ColorPalette::Foreground]]; }
+
+.PoGc:after, .DDnc:after, .FpGc:after,
+.c:after	{ content: &quot;]&quot;; color: [[ColorPalette::Foreground]]; }
+
+.NTerm		{ text-decoration: underline; text-decoration-color: #00aa00; }
+.LimitGeneral	{ text-decoration: underline; text-decoration-color: #0000ff; }
+}}}
+!!!Semantics details
+* &quot;возможности роста&quot; (possibilities of growth), в т.ч. комментарии (comments): `.PoG`, `.PoGc`
+* сделанное/написанное с изъяном (done [written] to be done, but not ideally): `.DDn`, `.DDnc`
+* подчёркнуто &quot;замороженные&quot; точки роста (frozen ~PoG or ~DDn): `.FpG`, `.FpGc` (dimmer than blue)
+* комментарии/&quot;подразумеваемые&quot; вещи: `.c`
+* тэг `code` улучшает редактор для CSS, JS и т.п. (в edit mode)
+* тэг `notepad` задаёт отображение и редактор ~как в блокноте~
+** {{PoG{add also save-in-edit-mode button}}}
+** {{PoG{disable wikiwords}}}
+!!!Representation
+{{{
+#sidebarOptions .sliderPanel	{ background-color:[[ColorPalette::Background]];
+					font-size: 95%; }
+#tiddlerStyleSheet .viewer pre	{ clear: both !important; }
+
+.headerForeground,
+.headerShadow			{ padding-top: 1em; }
+
+#displayArea			{ margin-bottom: 30%; }
+
+body		{ letter-spacing: 0.02em; }
+code, pre	{ letter-spacing: 0; }
+
+.viewer img	{ max-width: 100%; }
+
+.toolbar a	{ display: inline-block; }
+.toolbar	{ float: right; }
+}}}
+!!!Representation details
+* ...
+* `margin-bottom` of `#displayArea` – to be able to keep the content on the eye level
+* `letter-spacing` gives less tight font; non-zero breaks monospace when tabs are used, so we remove `letter-spacing` for code
+!!!Representation tools
+{{{
+table.borderless,
+table.borderless &gt; tbody &gt; tr,
+table.borderless &gt; tbody &gt; tr &gt; td,
+table.borderless &gt; tbody &gt; tr &gt; th	{ border: 0 !important; }
+
+div[tags~=&quot;hideTagged&quot;]
+.tagging		{ display: none; }
+div[tags~=&quot;hideTags&quot;]
+.tagged			{ display: none; }
+}}}
+!!!Representation tools details
+* ...
+!!!FireFox CSS
+{{{
+@-moz-document url-prefix() {
+	pre, code, div[tags~=&quot;code&quot;] .editor,
+	div[tags~=&quot;systemConfig&quot;] .editor,
+	#tiddlerStyleSheet .editor {
+		font-family: 'Droid Sans Mono', Consolas, monospace !important;
+		font-size: 100% !important;
+	}
+}
+}}}
+!!!!
+***/</pre>
+</div>
 </div>
 <!--POST-STOREAREA-->
 <!--POST-BODY-START-->
