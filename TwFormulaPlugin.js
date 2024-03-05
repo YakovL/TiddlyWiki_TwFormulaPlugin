@@ -40,9 +40,10 @@ var libs = {
 	jqMath: 4,
 	MathQuill: 5,
 }
+var defaultLib = 'KaTeX'
 
 // config:
-config.options.txtMathLib = config.options.txtMathLib || 'KaTeX'
+config.options.txtMathLib = config.options.txtMathLib || defaultLib
 var selectedLib = libs[config.options.txtMathLib]
 
 ;(function main() {
