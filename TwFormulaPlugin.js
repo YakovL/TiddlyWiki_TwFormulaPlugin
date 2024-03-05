@@ -158,65 +158,64 @@ config.formatterHelpers.mathFormatHelper = function(w) {
 	var endRegExp = new RegExp(this.terminator, "mg");
 	endRegExp.lastIndex = w.matchStart + w.matchLength;
 	var matched = endRegExp.exec(w.source);
+	if(!matched) return
 
-	if(matched) {
-		var e = document.createElement(this.element);
-		if(selectedLib == libs.MathJax)
-			e.type = this.inline ? "math/tex" : "math/tex; mode=display";
-		var latex = w.source.substr(w.matchStart + w.matchLength,
-			matched.index - w.matchStart - w.matchLength);
-		if(this.keepdelim)
-			latex = w.source.substr(w.matchStart, matched.index + matched[0].length - w.matchStart);
+	var e = document.createElement(this.element);
+	if(selectedLib == libs.MathJax)
+		e.type = this.inline ? "math/tex" : "math/tex; mode=display";
+	var latex = w.source.substr(w.matchStart + w.matchLength,
+		matched.index - w.matchStart - w.matchLength);
+	if(this.keepdelim)
+		latex = w.source.substr(w.matchStart, matched.index + matched[0].length - w.matchStart);
 
 // pre-parsing can be done here
 latex = latex.replace(/\\?π/mg, "\\pi").replace("×", "\\times").replace("∞", "\\infty");
 
-		if(UseInnerHTML)
-			e.innerHTML = latex;
-		else
-			e.text = latex;
-		w.output.appendChild(e);
-		if(selectedLib == libs.jqMath)
-			M.parseMath(e);
-		if(selectedLib == libs.KaTeX)
-			try {
-				katex.render(latex, e, {
-					displayMode: !this.inline,
-					throwOnError: false,
-					errorColor: "#ff0000"
-				});
-			} catch(e) {
-				if(!(e.message == "katex is not defined"))
-					console.log("katex exception:");
-				console.log(e);
-			}
-		if(selectedLib == libs.MathQuill)
-		{ try{
-			var mqEditor = config.extensions.mathQuill.MathField(e, {
-				spaceBehavesLikeTab: true, // ??
-				handlers: {
-					edit: function() {
-						// do onchange stuff here
-						// use mathQuillEditor.latex()
-						//  to either set or get latex
-					}
+	if(UseInnerHTML)
+		e.innerHTML = latex;
+	else
+		e.text = latex;
+	w.output.appendChild(e);
+	if(selectedLib == libs.jqMath)
+		M.parseMath(e);
+	if(selectedLib == libs.KaTeX)
+		try {
+			katex.render(latex, e, {
+				displayMode: !this.inline,
+				throwOnError: false,
+				errorColor: "#ff0000"
+			});
+		} catch(e) {
+			if(!(e.message == "katex is not defined"))
+				console.log("katex exception:");
+			console.log(e);
+		}
+	if(selectedLib == libs.MathQuill)
+	{ try{
+		var mqEditor = config.extensions.mathQuill.MathField(e, {
+			spaceBehavesLikeTab: true, // ??
+			handlers: {
+				edit: function() {
+					// do onchange stuff here
+					// use mathQuillEditor.latex()
+					//  to either set or get latex
 				}
-			});
-			mqEditor.latex(latex);
+			}
+		});
+		mqEditor.latex(latex);
 
-			var tid = w.tiddler,
-				startPos = w.matchStart,
-				openWrapper = this.openWrapper,
-				closeWrapper = this.closeWrapper;
-			jQuery(e).keydown(function(e) {
-				if(e.which == 13) // on press enter, apply changes
-					changeWikiText(tid, startPos, latex.length, openWrapper, closeWrapper, mqEditor.latex())
+		var tid = w.tiddler,
+			startPos = w.matchStart,
+			openWrapper = this.openWrapper,
+			closeWrapper = this.closeWrapper;
+		jQuery(e).keydown(function(e) {
+			if(e.which == 13) // on press enter, apply changes
+				changeWikiText(tid, startPos, latex.length, openWrapper, closeWrapper, mqEditor.latex())
 
-			});
-		} catch(e) { console.log("MathQuill formatter: " + e.message) } }
+		});
+	} catch(e) { console.log("MathQuill formatter: " + e.message) } }
 
-		w.nextMatch = endRegExp.lastIndex;
-	}
+	w.nextMatch = endRegExp.lastIndex;
 };
 
 var mainMathFormatters = [
