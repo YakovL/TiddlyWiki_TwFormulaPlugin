@@ -43,7 +43,7 @@ var libs = {
 
 // config:
 config.options.txtMathLib = config.options.txtMathLib || 'KaTeX'
-var math_lib = libs[config.options.txtMathLib]
+var selectedLib = libs[config.options.txtMathLib]
 
 ;(function main() {
     // install only once, notify if there's another copy of formulae plugin
@@ -88,8 +88,7 @@ var loadCSS = function(path)
 //			     Load the library
 // =================================================================
 
-switch(math_lib)
-{
+switch(selectedLib) {
     case libs.MathJax:
         // set the path to MathJax.js (this may be overwritten by the user)
         var mathJaxPath = "elder/MathJaxPlugin/" + "js/MathJax/";
@@ -163,7 +162,7 @@ config.formatterHelpers.mathFormatHelper = function(w) {
 
     if(matched) {
         var e = document.createElement(this.element);
-        if(math_lib == libs.MathJax)
+        if(selectedLib == libs.MathJax)
             e.type = this.inline ? "math/tex" : "math/tex; mode=display";
         var latex = w.source.substr(w.matchStart + w.matchLength,
             matched.index - w.matchStart - w.matchLength);
@@ -178,9 +177,9 @@ latex = latex.replace(/\\?π/mg, "\\pi").replace("×", "\\times").replace("∞",
         else
             e.text = latex;
         w.output.appendChild(e);
-        if(math_lib == libs.jqMath)
+        if(selectedLib == libs.jqMath)
             M.parseMath(e);
-        if(math_lib == libs.KaTeX)
+        if(selectedLib == libs.KaTeX)
             try {
                 katex.render(latex, e, {
                     displayMode: !this.inline,
@@ -192,7 +191,7 @@ latex = latex.replace(/\\?π/mg, "\\pi").replace("×", "\\times").replace("∞",
                     console.log("katex exception:");
                 console.log(e);
             }
-        if(math_lib == libs.MathQuill)
+        if(selectedLib == libs.MathQuill)
         { try{
             var mqEditor = config.extensions.mathQuill.MathField(e, {
                 spaceBehavesLikeTab: true, // ??
@@ -231,9 +230,9 @@ var mainMathFormatters = [
         match: "\\\$\\\$",
         terminator: "\\\$\\\$\\n?",
         termRegExp: "\\\$\\\$\\n?",
-        element: (math_lib == libs.MathJax ? "script" : "div"),
+        element: (selectedLib == libs.MathJax ? "script" : "div"),
         inline: false,
-        keepdelim: (math_lib == libs.jqMath),
+        keepdelim: (selectedLib == libs.jqMath),
         handler: config.formatterHelpers.mathFormatHelper
     },{
         name: "inlineMath1",
@@ -244,9 +243,9 @@ var mainMathFormatters = [
         match: "\\\$", 
         terminator: "\\\$",
         termRegExp: "\\\$",
-        element: (math_lib == libs.MathJax ? "script" : "span"),
+        element: (selectedLib == libs.MathJax ? "script" : "span"),
         inline: true,
-        keepdelim: (math_lib == libs.jqMath),
+        keepdelim: (selectedLib == libs.jqMath),
         handler: config.formatterHelpers.mathFormatHelper
     }
 ];
@@ -261,9 +260,9 @@ var backslashFormatters = [
         match: "\\\\\\\(",
         terminator: "\\\\\\\)",
         termRegExp: "\\\\\\\)",
-        element: (math_lib == libs.MathJax ? "script" : "span"),
+        element: (selectedLib == libs.MathJax ? "script" : "span"),
         inline: true,
-        keepdelim: (math_lib == libs.jqMath),
+        keepdelim: (selectedLib == libs.jqMath),
         handler: config.formatterHelpers.mathFormatHelper
     },{
         name: "displayMath2",
@@ -274,9 +273,9 @@ var backslashFormatters = [
         match: "\\\\\\\[",
         terminator: "\\\\\\\]\\n?",
         termRegExp: "\\\\\\\]\\n?",
-        element: (math_lib == libs.MathJax ? "script" : "div"),
+        element: (selectedLib == libs.MathJax ? "script" : "div"),
         inline: false,
-        keepdelim: (math_lib == libs.jqMath),
+        keepdelim: (selectedLib == libs.jqMath),
         handler: config.formatterHelpers.mathFormatHelper
     },{
         name: "displayMath3",
@@ -287,9 +286,9 @@ var backslashFormatters = [
         match: "\\\\begin\\{equation\\}",
         terminator: "\\\\end\\{equation\\}\\n?",
         termRegExp: "\\\\end\\{equation\\}\\n?",
-        element: (math_lib == libs.MathJax ? "script" : "div"),
+        element: (selectedLib == libs.MathJax ? "script" : "div"),
         inline: false,
-        keepdelim: (math_lib == libs.jqMath),
+        keepdelim: (selectedLib == libs.jqMath),
         handler: config.formatterHelpers.mathFormatHelper
     },{
         // These can be nested.  e.g. \begin{equation} \begin{array}{ccc} \begin{array}{ccc} ...
@@ -302,7 +301,7 @@ var backslashFormatters = [
         match: "\\\\begin\\{eqnarray\\}",
         terminator: "\\\\end\\{eqnarray\\}\\n?",
         termRegExp: "\\\\end\\{eqnarray\\}\\n?",
-        element: (math_lib == libs.MathJax ? "script" : "div"),
+        element: (selectedLib == libs.MathJax ? "script" : "div"),
         inline: false,
         keepdelim: true,
         handler: config.formatterHelpers.mathFormatHelper
@@ -325,7 +324,7 @@ config.formatters = config.formatters.concat(mainMathFormatters, backslashFormat
 // if the plugin is loaded via TIFP or other async means, formatter may be set already
 if(formatter) formatter = new Formatter(config.formatters)
 
-if(math_lib == libs.MathJax) {
+if(selectedLib == libs.MathJax) {
     old_wikify = wikify
     wikify = function(source, output, highlightRegExp, tiddler) {
         old_wikify.apply(this, arguments)
@@ -337,7 +336,7 @@ if(math_lib == libs.MathJax) {
 //			     Add the styles
 // =================================================================
 
-switch(math_lib) {
+switch(selectedLib) {
     case libs.jqMath:    setStylesheet(store.getTiddlerText("JQMath.css"), "jqMathStyles")
         break;
     case libs.MathQuill: setStylesheet(mathQuillCssExtras, "mathQuillCssExtras")
