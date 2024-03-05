@@ -35,10 +35,10 @@ Different libraries implement different subsets of ~LaTeX, so it's not like you 
 //{{{
 var libs = {
 //	jsMath: 1,	// not supported in this version as a deprecated solution
-    MathJax: 2,
-    KaTeX: 3,
-    jqMath: 4,
-    MathQuill: 5,
+	MathJax: 2,
+	KaTeX: 3,
+	jqMath: 4,
+	MathQuill: 5,
 }
 
 // config:
@@ -46,41 +46,39 @@ config.options.txtMathLib = config.options.txtMathLib || 'KaTeX'
 var selectedLib = libs[config.options.txtMathLib]
 
 ;(function main() {
-    // install only once, notify if there's another copy of formulae plugin
-    if(version.extensions.PluginMathJax || version.extensions.TwFormulaePlugin || window.jsMath) {
-        alert("TwFormulaPlugin: another copy of PluginMathJax or TwFormulaePlugin/TwFormulaPlugin is installed or jsMath is loaded")
-        return
-    }
-    version.extensions.TwFormulaePlugin = { installed: true }
+	// install only once, notify if there's another copy of formulae plugin
+	if(version.extensions.PluginMathJax || version.extensions.TwFormulaePlugin || window.jsMath) {
+		alert("TwFormulaPlugin: another copy of PluginMathJax or TwFormulaePlugin/TwFormulaPlugin is installed or jsMath is loaded")
+		return
+	}
+	version.extensions.TwFormulaePlugin = { installed: true }
 
-    var ie9RegExp = /^9\./
-    var UseInnerHTML = (config.browser.isOpera || config.browser.isIE && ie9RegExp.test(config.browser.ieVersion[1]))
+	var ie9RegExp = /^9\./
+	var UseInnerHTML = (config.browser.isOpera || config.browser.isIE && ie9RegExp.test(config.browser.ieVersion[1]))
 
 // a helper
-var loadLib = function(path, config)
-{
-    // create the script element and add it
-    var script = document.createElement("script");
-    script.type = "text/javascript";
-    script.src = path;
-    
-    if(UseInnerHTML)
-        script.innerHTML = config;
-    script.text = config;
+var loadLib = function(path, config) {
+	// create the script element and add it
+	var script = document.createElement("script");
+	script.type = "text/javascript";
+	script.src = path;
+	
+	if(UseInnerHTML)
+		script.innerHTML = config;
+	script.text = config;
 
-    document.getElementsByTagName("head")[0].appendChild(script);
+	document.getElementsByTagName("head")[0].appendChild(script);
 
-    return script
+	return script
 };
-var loadCSS = function(path)
-{
-    jQuery("head").append("<link rel='stylesheet' type='text/css' href='" + path + "' />");
+var loadCSS = function(path) {
+	jQuery("head").append("<link rel='stylesheet' type='text/css' href='" + path + "' />");
 /*	// without jQuery: https://stackoverflow.com/a/5186760/3995261
-    var stylesheet = document.createElement('link');
-    stylesheet.href = path;
-    stylesheet.rel = 'stylesheet';
-    stylesheet.type = 'text/css';
-    document.getElementsByTagName('head')[0].appendChild(stylesheet);
+	var stylesheet = document.createElement('link');
+	stylesheet.href = path;
+	stylesheet.rel = 'stylesheet';
+	stylesheet.type = 'text/css';
+	document.getElementsByTagName('head')[0].appendChild(stylesheet);
 */
 };
 
@@ -89,65 +87,66 @@ var loadCSS = function(path)
 // =================================================================
 
 switch(selectedLib) {
-    case libs.MathJax:
-        // set the path to MathJax.js (this may be overwritten by the user)
-        var mathJaxPath = "elder/MathJaxPlugin/" + "js/MathJax/";
+	case libs.MathJax:
+		// set the path to MathJax.js (this may be overwritten by the user)
+		var mathJaxPath = "elder/MathJaxPlugin/" + "js/MathJax/";
 
-        var mjconfig =
-        'MathJax.Hub.Config({' +
-            'jax: ["input/TeX","output/HTML-CSS"],' +
-            'extensions: ["TeX/AMSmath.js", "TeX/AMSsymbols.js"],' +
-            '"HTML-CSS": {' +
-                'scale: 115' +
-            '}' +
-        '});' +
-        'MathJax.Hub.Startup.onload();';
+		var mjconfig =
+		'MathJax.Hub.Config({' +
+			'jax: ["input/TeX","output/HTML-CSS"],' +
+			'extensions: ["TeX/AMSmath.js", "TeX/AMSsymbols.js"],' +
+			'"HTML-CSS": {' +
+				'scale: 115' +
+			'}' +
+		'});' +
+		'MathJax.Hub.Startup.onload();';
 
-        loadLib(mathJaxPath + "MathJax.js", mjconfig)
-    break;
-    case libs.KaTeX:
-        var kaTeXpath = "https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/"
-        // var kaTeXpath = "jsLibs/KaTeX/"
-        loadLib(kaTeXpath + "katex.min.js"); // jQuery.getScript requires xhr, so won't work locally (through file://)
-        // http://stackoverflow.com/questions/7718935/load-scripts-asynchronously
+		loadLib(mathJaxPath + "MathJax.js", mjconfig)
+	break;
+	case libs.KaTeX:
+		var kaTeXpath = "https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/"
+		// var kaTeXpath = "jsLibs/KaTeX/"
+		loadLib(kaTeXpath + "katex.min.js"); // jQuery.getScript requires xhr, so won't work locally (through file://)
+		// http://stackoverflow.com/questions/7718935/load-scripts-asynchronously
 
-        loadCSS(kaTeXpath + "katex.min.css")
-    break;
-    case libs.MathQuill:
-        var mathQuillPath = "jsLibs/mathquill/";
-        loadLib(mathQuillPath + "mathquill-0.10.0-min.js");
-        var loadMQ = function() { try{
-            config.extensions.mathQuill = MathQuill.getInterface(2);
-        } catch(e) { setTimeout(loadMQ, 50) } };
-        loadMQ();
-        loadCSS(mathQuillPath + "mathquill-0.10.0-min.css");
-        mathQuillCssExtras = // div = outline formulae
-            "div.mq-editable-field { display: block; text-align: center; }\n"+
-            "   .mq-editable-field { border: thin solid #cccccc; }";
-    break;
+		loadCSS(kaTeXpath + "katex.min.css")
+	break;
+	case libs.MathQuill:
+		var mathQuillPath = "jsLibs/mathquill/";
+		loadLib(mathQuillPath + "mathquill-0.10.0-min.js");
+		var loadMQ = function() { try{
+			config.extensions.mathQuill = MathQuill.getInterface(2);
+		} catch(e) { setTimeout(loadMQ, 50) } };
+		loadMQ();
+		loadCSS(mathQuillPath + "mathquill-0.10.0-min.css");
+		// div = outline formula
+		mathQuillCssExtras =
+			"div.mq-editable-field { display: block; text-align: center; }\n"+
+			"   .mq-editable-field { border: thin solid #cccccc; }";
+	break;
 
-    // for jqMath nothing is to be loaded
-    // jsMath is not implemented in this version
+	// for jqMath nothing is to be loaded
+	// jsMath is not implemented in this version
 }
 
 // =================================================================
 //	   Define helpers for wikitext editing through WYSIWYG
 // =================================================================
 
-var changeWikiText = function(sourceTiddler, startPosition, oldLatexLength, openWrapper, closeWrapper, newLatex)
-{
-    // prepare texts and positions
-    var noTiddlerMsg = "changeWikiText: no sourceTiddler detected"
-    if(!sourceTiddler) return console.log(noTiddlerMsg)
+var changeWikiText = function(sourceTiddler, startPosition, oldLatexLength, openWrapper, closeWrapper, newLatex) {
 
-    var oldLenght = openWrapper.length + oldLatexLength + closeWrapper.length
+	// prepare texts and positions
+	var noTiddlerMsg = "changeWikiText: no sourceTiddler detected"
+	if(!sourceTiddler) return console.log(noTiddlerMsg)
 
-    sourceTiddler.text = sourceTiddler.text.substr(0, startPosition) +
-        openWrapper + newLatex + closeWrapper +
-        sourceTiddler.text.substr(startPosition + oldLenght)
+	var oldLenght = openWrapper.length + oldLatexLength + closeWrapper.length
 
-    // recalcs slices, notify, etc.
-    store.saveTiddler(sourceTiddler)
+	sourceTiddler.text = sourceTiddler.text.substr(0, startPosition) +
+		openWrapper + newLatex + closeWrapper +
+		sourceTiddler.text.substr(startPosition + oldLenght)
+
+	// recalcs slices, notify, etc.
+	store.saveTiddler(sourceTiddler)
 };
 
 // =================================================================
@@ -156,168 +155,168 @@ var changeWikiText = function(sourceTiddler, startPosition, oldLatexLength, open
 
 config.formatterHelpers.mathFormatHelper = function(w) {
 
-    var endRegExp = new RegExp(this.terminator, "mg");
-    endRegExp.lastIndex = w.matchStart + w.matchLength;
-    var matched = endRegExp.exec(w.source);
+	var endRegExp = new RegExp(this.terminator, "mg");
+	endRegExp.lastIndex = w.matchStart + w.matchLength;
+	var matched = endRegExp.exec(w.source);
 
-    if(matched) {
-        var e = document.createElement(this.element);
-        if(selectedLib == libs.MathJax)
-            e.type = this.inline ? "math/tex" : "math/tex; mode=display";
-        var latex = w.source.substr(w.matchStart + w.matchLength,
-            matched.index - w.matchStart - w.matchLength);
-        if(this.keepdelim)
-            latex = w.source.substr(w.matchStart, matched.index + matched[0].length - w.matchStart);
+	if(matched) {
+		var e = document.createElement(this.element);
+		if(selectedLib == libs.MathJax)
+			e.type = this.inline ? "math/tex" : "math/tex; mode=display";
+		var latex = w.source.substr(w.matchStart + w.matchLength,
+			matched.index - w.matchStart - w.matchLength);
+		if(this.keepdelim)
+			latex = w.source.substr(w.matchStart, matched.index + matched[0].length - w.matchStart);
 
 // pre-parsing can be done here
 latex = latex.replace(/\\?π/mg, "\\pi").replace("×", "\\times").replace("∞", "\\infty");
 
-        if(UseInnerHTML)
-            e.innerHTML = latex;
-        else
-            e.text = latex;
-        w.output.appendChild(e);
-        if(selectedLib == libs.jqMath)
-            M.parseMath(e);
-        if(selectedLib == libs.KaTeX)
-            try {
-                katex.render(latex, e, {
-                    displayMode: !this.inline,
-                    throwOnError: false,
-                    errorColor: "#ff0000"
-                });
-            } catch(e) {
-                if(!(e.message == "katex is not defined"))
-                    console.log("katex exception:");
-                console.log(e);
-            }
-        if(selectedLib == libs.MathQuill)
-        { try{
-            var mqEditor = config.extensions.mathQuill.MathField(e, {
-                spaceBehavesLikeTab: true, // ??
-                handlers: {
-                    edit: function() {
-                        // do onchange stuff here
-                        // use mathQuillEditor.latex()
-                        //  to either set or get latex
-                    }
-                }
-            });
-            mqEditor.latex(latex);
+		if(UseInnerHTML)
+			e.innerHTML = latex;
+		else
+			e.text = latex;
+		w.output.appendChild(e);
+		if(selectedLib == libs.jqMath)
+			M.parseMath(e);
+		if(selectedLib == libs.KaTeX)
+			try {
+				katex.render(latex, e, {
+					displayMode: !this.inline,
+					throwOnError: false,
+					errorColor: "#ff0000"
+				});
+			} catch(e) {
+				if(!(e.message == "katex is not defined"))
+					console.log("katex exception:");
+				console.log(e);
+			}
+		if(selectedLib == libs.MathQuill)
+		{ try{
+			var mqEditor = config.extensions.mathQuill.MathField(e, {
+				spaceBehavesLikeTab: true, // ??
+				handlers: {
+					edit: function() {
+						// do onchange stuff here
+						// use mathQuillEditor.latex()
+						//  to either set or get latex
+					}
+				}
+			});
+			mqEditor.latex(latex);
 
-            var tid = w.tiddler,
-                startPos = w.matchStart,
-                openWrapper = this.openWrapper,
-                closeWrapper = this.closeWrapper;
-            jQuery(e).keydown(function(e) {
-                if(e.which == 13) // on press enter, apply changes
-                    changeWikiText(tid, startPos, latex.length, openWrapper, closeWrapper, mqEditor.latex())
+			var tid = w.tiddler,
+				startPos = w.matchStart,
+				openWrapper = this.openWrapper,
+				closeWrapper = this.closeWrapper;
+			jQuery(e).keydown(function(e) {
+				if(e.which == 13) // on press enter, apply changes
+					changeWikiText(tid, startPos, latex.length, openWrapper, closeWrapper, mqEditor.latex())
 
-            });
-        } catch(e) { console.log("MathQuill formatter: " + e.message) } }
+			});
+		} catch(e) { console.log("MathQuill formatter: " + e.message) } }
 
-        w.nextMatch = endRegExp.lastIndex;
-    }
+		w.nextMatch = endRegExp.lastIndex;
+	}
 };
 
 var mainMathFormatters = [
-    {
-        name: "displayMath1",
-        // used for editing, would be nice to generate from it:
-        // closeWrapper, match, terminator and termRegExp
-        openWrapper: "$$",
-        closeWrapper: "$$",
-        match: "\\\$\\\$",
-        terminator: "\\\$\\\$\\n?",
-        termRegExp: "\\\$\\\$\\n?",
-        element: (selectedLib == libs.MathJax ? "script" : "div"),
-        inline: false,
-        keepdelim: (selectedLib == libs.jqMath),
-        handler: config.formatterHelpers.mathFormatHelper
-    },{
-        name: "inlineMath1",
-        // used for editing, would be nice to generate from it:
-        // closeWrapper, match, terminator and termRegExp
-        openWrapper: "$",
-        closeWrapper: "$",
-        match: "\\\$", 
-        terminator: "\\\$",
-        termRegExp: "\\\$",
-        element: (selectedLib == libs.MathJax ? "script" : "span"),
-        inline: true,
-        keepdelim: (selectedLib == libs.jqMath),
-        handler: config.formatterHelpers.mathFormatHelper
-    }
+	{
+		name: "displayMath1",
+		// used for editing, would be nice to generate from it:
+		// closeWrapper, match, terminator and termRegExp
+		openWrapper: "$$",
+		closeWrapper: "$$",
+		match: "\\\$\\\$",
+		terminator: "\\\$\\\$\\n?",
+		termRegExp: "\\\$\\\$\\n?",
+		element: (selectedLib == libs.MathJax ? "script" : "div"),
+		inline: false,
+		keepdelim: (selectedLib == libs.jqMath),
+		handler: config.formatterHelpers.mathFormatHelper
+	},{
+		name: "inlineMath1",
+		// used for editing, would be nice to generate from it:
+		// closeWrapper, match, terminator and termRegExp
+		openWrapper: "$",
+		closeWrapper: "$",
+		match: "\\\$", 
+		terminator: "\\\$",
+		termRegExp: "\\\$",
+		element: (selectedLib == libs.MathJax ? "script" : "span"),
+		inline: true,
+		keepdelim: (selectedLib == libs.jqMath),
+		handler: config.formatterHelpers.mathFormatHelper
+	}
 ];
 
 var backslashFormatters = [
-    {
-        name: "inlineMath2",
-        // used for editing, would be nice to generate from it: match
-        openWrapper: "\\(",
-        // ~ : terminator and termRegExp
-        closeWrapper: "\\)",
-        match: "\\\\\\\(",
-        terminator: "\\\\\\\)",
-        termRegExp: "\\\\\\\)",
-        element: (selectedLib == libs.MathJax ? "script" : "span"),
-        inline: true,
-        keepdelim: (selectedLib == libs.jqMath),
-        handler: config.formatterHelpers.mathFormatHelper
-    },{
-        name: "displayMath2",
-        // used for editing, would be nice to generate from it: match
-        openWrapper: "\\[",
-        // ~ : terminator and termRegExp
-        closeWrapper: "\\]",
-        match: "\\\\\\\[",
-        terminator: "\\\\\\\]\\n?",
-        termRegExp: "\\\\\\\]\\n?",
-        element: (selectedLib == libs.MathJax ? "script" : "div"),
-        inline: false,
-        keepdelim: (selectedLib == libs.jqMath),
-        handler: config.formatterHelpers.mathFormatHelper
-    },{
-        name: "displayMath3",
-        // used for editing, would be nice to generate from it: match
-        openWrapper: "\\begin{equation}",
-        // ~ : terminator and termRegExp
-        closeWrapper: "\\end{equation}",
-        match: "\\\\begin\\{equation\\}",
-        terminator: "\\\\end\\{equation\\}\\n?",
-        termRegExp: "\\\\end\\{equation\\}\\n?",
-        element: (selectedLib == libs.MathJax ? "script" : "div"),
-        inline: false,
-        keepdelim: (selectedLib == libs.jqMath),
-        handler: config.formatterHelpers.mathFormatHelper
-    },{
-        // These can be nested.  e.g. \begin{equation} \begin{array}{ccc} \begin{array}{ccc} ...
+	{
+		name: "inlineMath2",
+		// used for editing, would be nice to generate from it: match
+		openWrapper: "\\(",
+		// ~ : terminator and termRegExp
+		closeWrapper: "\\)",
+		match: "\\\\\\\(",
+		terminator: "\\\\\\\)",
+		termRegExp: "\\\\\\\)",
+		element: (selectedLib == libs.MathJax ? "script" : "span"),
+		inline: true,
+		keepdelim: (selectedLib == libs.jqMath),
+		handler: config.formatterHelpers.mathFormatHelper
+	},{
+		name: "displayMath2",
+		// used for editing, would be nice to generate from it: match
+		openWrapper: "\\[",
+		// ~ : terminator and termRegExp
+		closeWrapper: "\\]",
+		match: "\\\\\\\[",
+		terminator: "\\\\\\\]\\n?",
+		termRegExp: "\\\\\\\]\\n?",
+		element: (selectedLib == libs.MathJax ? "script" : "div"),
+		inline: false,
+		keepdelim: (selectedLib == libs.jqMath),
+		handler: config.formatterHelpers.mathFormatHelper
+	},{
+		name: "displayMath3",
+		// used for editing, would be nice to generate from it: match
+		openWrapper: "\\begin{equation}",
+		// ~ : terminator and termRegExp
+		closeWrapper: "\\end{equation}",
+		match: "\\\\begin\\{equation\\}",
+		terminator: "\\\\end\\{equation\\}\\n?",
+		termRegExp: "\\\\end\\{equation\\}\\n?",
+		element: (selectedLib == libs.MathJax ? "script" : "div"),
+		inline: false,
+		keepdelim: (selectedLib == libs.jqMath),
+		handler: config.formatterHelpers.mathFormatHelper
+	},{
+		// These can be nested.  e.g. \begin{equation} \begin{array}{ccc} \begin{array}{ccc} ...
 
-        name: "displayMath4",
-        // used for editing, would be nice to generate from it: match
-        openWrapper: "\\begin{eqnarray}",
-        // ~ : terminator and termRegExp
-        closeWrapper: "\\end{eqnarray}",
-        match: "\\\\begin\\{eqnarray\\}",
-        terminator: "\\\\end\\{eqnarray\\}\\n?",
-        termRegExp: "\\\\end\\{eqnarray\\}\\n?",
-        element: (selectedLib == libs.MathJax ? "script" : "div"),
-        inline: false,
-        keepdelim: true,
-        handler: config.formatterHelpers.mathFormatHelper
-    },{
-        // The escape must come between backslash formatters and regular ones.
-        // So any latex-like \commands must be added to the beginning of
-        // backslashformatters here.
+		name: "displayMath4",
+		// used for editing, would be nice to generate from it: match
+		openWrapper: "\\begin{eqnarray}",
+		// ~ : terminator and termRegExp
+		closeWrapper: "\\end{eqnarray}",
+		match: "\\\\begin\\{eqnarray\\}",
+		terminator: "\\\\end\\{eqnarray\\}\\n?",
+		termRegExp: "\\\\end\\{eqnarray\\}\\n?",
+		element: (selectedLib == libs.MathJax ? "script" : "div"),
+		inline: false,
+		keepdelim: true,
+		handler: config.formatterHelpers.mathFormatHelper
+	},{
+		// The escape must come between backslash formatters and regular ones.
+		// So any latex-like \commands must be added to the beginning of
+		// backslashformatters here.
 
-        name: "escape",
-        match: "\\\\.",
-        handler: function(w) {
-            var escapedCharacter = w.source.substr(w.matchStart + 1, 1)
-            w.output.appendChild(document.createTextNode(escapedCharacter))
-            w.nextMatch = w.matchStart + 2 // 2 = length of \.
-        }
-    }
+		name: "escape",
+		match: "\\\\.",
+		handler: function(w) {
+			var escapedCharacter = w.source.substr(w.matchStart + 1, 1)
+			w.output.appendChild(document.createTextNode(escapedCharacter))
+			w.nextMatch = w.matchStart + 2 // 2 = length of \.
+		}
+	}
 ];
 
 config.formatters = config.formatters.concat(mainMathFormatters, backslashFormatters)
@@ -325,11 +324,11 @@ config.formatters = config.formatters.concat(mainMathFormatters, backslashFormat
 if(formatter) formatter = new Formatter(config.formatters)
 
 if(selectedLib == libs.MathJax) {
-    old_wikify = wikify
-    wikify = function(source, output, highlightRegExp, tiddler) {
-        old_wikify.apply(this, arguments)
-        if(window.MathJax) MathJax.Hub.Queue(["Typeset", MathJax.Hub, output])
-    };
+	old_wikify = wikify
+	wikify = function(source, output, highlightRegExp, tiddler) {
+		old_wikify.apply(this, arguments)
+		if(window.MathJax) MathJax.Hub.Queue(["Typeset", MathJax.Hub, output])
+	};
 }
 
 // =================================================================
@@ -337,10 +336,10 @@ if(selectedLib == libs.MathJax) {
 // =================================================================
 
 switch(selectedLib) {
-    case libs.jqMath:    setStylesheet(store.getTiddlerText("JQMath.css"), "jqMathStyles")
-        break;
-    case libs.MathQuill: setStylesheet(mathQuillCssExtras, "mathQuillCssExtras")
-        break;
+	case libs.jqMath:    setStylesheet(store.getTiddlerText("JQMath.css"), "jqMathStyles")
+		break;
+	case libs.MathQuill: setStylesheet(mathQuillCssExtras, "mathQuillCssExtras")
+		break;
 }
 })();
 //}}}
