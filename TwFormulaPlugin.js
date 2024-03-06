@@ -56,8 +56,6 @@ var libsConfig = {
 }
 
 var defaultLib = 'KaTeX'
-config.options.txtMathLib = config.options.txtMathLib || defaultLib
-var selectedLib = libsConfig[config.options.txtMathLib]
 
 var getLibPath = function(lib) {
 	if(config.options.txtMathLibPath) return config.options.txtMathLibPath
@@ -66,7 +64,9 @@ var getLibPath = function(lib) {
 	if(!libsConfig[lib]) lib = defaultLib
 	return libsConfig[lib].libPath
 }
+config.options.txtMathLib = config.options.txtMathLib || defaultLib
 config.options.txtMathLibPath = config.options.txtMathLibPath || getLibPath()
+var selectedLib = libsConfig[config.options.txtMathLib]
 
 ;(function main() {
 	// install only once, notify if there's another copy of formulae plugin
@@ -109,7 +109,7 @@ var loadCSS = function(path) {
 };
 
 // =================================================================
-//			     Load the library
+//			     Load the library and the styles
 // =================================================================
 
 switch(selectedLib) {
@@ -143,9 +143,12 @@ switch(selectedLib) {
 		var mathQuillCssExtras =
 			"div.mq-editable-field { display: block; text-align: center; }\n"+
 			"   .mq-editable-field { border: thin solid #cccccc; }"
+		setStylesheet(mathQuillCssExtras, "mathQuillCssExtras")
 	break;
 
-	// for jqMath nothing is to be loaded
+	case libsConfig.jqMath:
+		setStylesheet(store.getTiddlerText("JQMath.css"), "jqMathStyles")
+	break;
 	// jsMath is not implemented in this version
 }
 
@@ -350,15 +353,5 @@ if(selectedLib == libsConfig.MathJax) {
 	};
 }
 
-// =================================================================
-//			     Add the styles
-// =================================================================
-
-switch(selectedLib) {
-	case libsConfig.jqMath:    setStylesheet(store.getTiddlerText("JQMath.css"), "jqMathStyles")
-		break;
-	case libsConfig.MathQuill: setStylesheet(mathQuillCssExtras, "mathQuillCssExtras")
-		break;
-}
 })();
 //}}}
