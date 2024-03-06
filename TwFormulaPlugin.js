@@ -38,6 +38,10 @@ If you'd like to save the result, press {{{enter}}}. It will refresh things, so 
 Please note that if {{{MathQuill}}} doesn't support some ~LaTeX bits used in a formula, it will show it blank; trying to paste unsupported ~LaTeX results in no change (not pasted).
 ***/
 //{{{
+// =================================================================
+//			   Configure lib and path, install only once
+// =================================================================
+
 var libsConfig = {
 	// jsMath is not supported in this version as a deprecated solution
 	MathJax: {
@@ -77,7 +81,10 @@ var selectedLib = libsConfig[config.options.txtMathLib]
 	var ie9RegExp = /^9\./
 	var UseInnerHTML = (config.browser.isOpera || config.browser.isIE && ie9RegExp.test(config.browser.ieVersion[1]))
 
-// a helper
+// =================================================================
+//			     Load the library and the styles
+// =================================================================
+
 var loadLib = function(path, config) {
 	// jQuery.getScript requires xhr, so won't work locally (through file://)
 	// http://stackoverflow.com/questions/7718935/load-scripts-asynchronously
@@ -94,7 +101,7 @@ var loadLib = function(path, config) {
 	document.getElementsByTagName("head")[0].appendChild(script);
 
 	return script
-};
+}
 var loadCSS = function(path) {
 	jQuery("head").append("<link rel='stylesheet' type='text/css' href='" + path + "' />");
 /*	// without jQuery: https://stackoverflow.com/a/5186760/3995261
@@ -104,11 +111,7 @@ var loadCSS = function(path) {
 	stylesheet.type = 'text/css';
 	document.getElementsByTagName('head')[0].appendChild(stylesheet);
 */
-};
-
-// =================================================================
-//			     Load the library and the styles
-// =================================================================
+}
 
 switch(selectedLib) {
 	case libsConfig.MathJax:
