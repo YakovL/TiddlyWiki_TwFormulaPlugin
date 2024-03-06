@@ -1,7 +1,7 @@
 /***
 |Name       |TwFormulaPlugin|
 |Description|Render beautiful formulas using LaTeX syntax in wrappers like {{{$$...$$}}}. Plugin supports different libraries for that (MathJax, KaTeX, jqMath, MathQuill) – the supported LaTeX subset and some features depend on the selected library (MathQuill provides WYSIWYGish editing) {{DDnc{''retest''}}}|
-|Version    |0.6.0|
+|Version    |0.7.0|
 |Source     |https://github.com/YakovL/TiddlyWiki_TwFormulaPlugin/blob/master/TwFormulaPlugin.js|
 |Demo       |https://YakovL.github.io/TiddlyWiki_TwFormulaPlugin|
 |Previous contributors|Forked from ~PluginMathJax v1.3, by an anonymous author (called themselves "[[Canada East|http://tiddlywiki.canada-east.ca/]]"); jqMath was added thanks to [[this|https://groups.google.com/forum/#!topic/tiddlywiki/PNXaylx1HRY]] thread and the prototype provied by Eric Schulman|
@@ -23,7 +23,7 @@ In other cases, you may need a centered block formula like this:
 $$ P(E) = {n \choose k} p^k (1 - p)^{n - k} $$
 This can be inserted via the {{{$$ ... $$}}} and {{{\[ ... \]}}} wrappers. Note that to get \$\$ as plain text, you'll need {{{\$\$}}} (and not {{{\$$}}}).
 
-{{PoGc{explain other formatters}}}
+{{PoGc{explain other formatters (displayMath3, displayMath4)}}}
 {{PoGc{how to add (12.2) on the right}}}
 {{DDnc{startup vs reload tiddlers}}}
 
@@ -53,8 +53,14 @@ var defaultLib = 'KaTeX'
 config.options.txtMathLib = config.options.txtMathLib || defaultLib
 var selectedLib = libs[config.options.txtMathLib]
 var libsConfig = {
+	MathJax: {
+		libPath: 'http://cdn.mathjax.org/mathjax/latest/'
+	},
 	KaTeX: {
 		libPath: 'https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/'
+	},
+	MathQuill: {
+		libPath: 'https://cdnjs.cloudflare.com/ajax/libs/mathquill/0.10.1/'
 	}
 }
 var getLibPath = function(lib) {
@@ -108,10 +114,7 @@ var loadCSS = function(path) {
 
 switch(selectedLib) {
 	case libs.MathJax:
-		// set the path to MathJax.js (this may be overwritten by the user)
-		var mathJaxPath = "elder/MathJaxPlugin/" + "js/MathJax/";
-
-		var mjconfig =
+		var mjConfig =
 		'MathJax.Hub.Config({' +
 			'jax: ["input/TeX","output/HTML-CSS"],' +
 			'extensions: ["TeX/AMSmath.js", "TeX/AMSsymbols.js"],' +
@@ -119,9 +122,9 @@ switch(selectedLib) {
 				'scale: 115' +
 			'}' +
 		'});' +
-		'MathJax.Hub.Startup.onload();';
+		'MathJax.Hub.Startup.onload();'
 
-		loadLib(mathJaxPath + "MathJax.js", mjconfig)
+		loadLib(getLibPath() + "MathJax.js", mjConfig)
 	break;
 	case libs.KaTeX:
 		var kaTeXpath = getLibPath()
@@ -131,17 +134,17 @@ switch(selectedLib) {
 		loadCSS(kaTeXpath + "katex.min.css")
 	break;
 	case libs.MathQuill:
-		var mathQuillPath = "jsLibs/mathquill/";
-		loadLib(mathQuillPath + "mathquill-0.10.0-min.js");
+		var mathQuillPath = getLibPath()
+		loadLib(mathQuillPath + "mathquill.min.js")
 		var loadMQ = function() { try{
-			config.extensions.mathQuill = MathQuill.getInterface(2);
-		} catch(e) { setTimeout(loadMQ, 50) } };
-		loadMQ();
-		loadCSS(mathQuillPath + "mathquill-0.10.0-min.css");
+			config.extensions.mathQuill = MathQuill.getInterface(2)
+		} catch(e) { setTimeout(loadMQ, 50) } }
+		loadMQ()
+		loadCSS(mathQuillPath + "mathquill.min.css")
 		// div = outline formula
-		mathQuillCssExtras =
+		var mathQuillCssExtras =
 			"div.mq-editable-field { display: block; text-align: center; }\n"+
-			"   .mq-editable-field { border: thin solid #cccccc; }";
+			"   .mq-editable-field { border: thin solid #cccccc; }"
 	break;
 
 	// for jqMath nothing is to be loaded
