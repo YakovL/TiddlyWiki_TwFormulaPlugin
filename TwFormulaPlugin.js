@@ -23,8 +23,6 @@ In other cases, you may need a centered block formula like this:
 $$ P(E) = {n \choose k} p^k (1 - p)^{n - k} $$
 This can be inserted via the {{{$$ ... $$}}} and {{{\[ ... \]}}} wrappers. Note that to get \$\$ as plain text, you'll need {{{\$\$}}} (and not {{{\$$}}}).
 
-{{PoGc{explain other formatters (displayMath3, displayMath4)}}}
-{{PoGc{how to add (12.2) on the right}}}
 {{DDnc{startup vs reload tiddlers}}}
 
 !!!Cross-library compatibility
