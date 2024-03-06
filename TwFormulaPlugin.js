@@ -1,7 +1,7 @@
 /***
 |Name       |TwFormulaPlugin|
 |Description|Render beautiful formulas using LaTeX syntax in wrappers like {{{$$...$$}}}. Plugin supports different libraries for that (MathJax, KaTeX, jqMath, MathQuill) – the supported LaTeX subset and some features depend on the selected library (MathQuill provides WYSIWYGish editing) {{DDnc{''retest''}}}|
-|Version    |0.7.0|
+|Version    |0.7.1|
 |Source     |https://github.com/YakovL/TiddlyWiki_TwFormulaPlugin/blob/master/TwFormulaPlugin.js|
 |Demo       |https://YakovL.github.io/TiddlyWiki_TwFormulaPlugin|
 |Previous contributors|Forked from ~PluginMathJax v1.3, by an anonymous author (called themselves "[[Canada East|http://tiddlywiki.canada-east.ca/]]"); jqMath was added thanks to [[this|https://groups.google.com/forum/#!topic/tiddlywiki/PNXaylx1HRY]] thread and the prototype provied by Eric Schulman|
@@ -12,7 +12,7 @@ Install the plugin as usual (copy with the {{{systemConfig}}} tag, reload). By d
 //If you'd like to load ~KaTeX from the another source// (for instance, from a local folder), download the latest [[release|https://github.com/KaTeX/KaTeX/releases]], unpack all the files into a folder, like {{{./jsLibs/KaTeX/}}} (so that if your TW is {{{folder/TW.html}}}, the katex.min.js, for instance, is in {{{folder/jsLibs/KaTeX/katex.min.js}}}; same for {{{katex.min.css}}}, etc), and set the path <<option txtMathLibPath>> to that path or url ({{{jsLibs/KaTeX/}}} in this case).
 
 //If you'd like to use another supported library,//
-# put one of the {{{libs}}} listed in code here: <<option txtMathLib>> {{DDnc{implement a select for an option macro instead}}};
+# put one of the lib names (listed in code in {{{libsConfig}}}) here: <<option txtMathLib>> {{DDnc{implement a select for an option macro instead}}};
 # get the files from _ {{DDnc{explain, where}}}, put them in _ {{DDnc{explain, where}}};
 # reload TW (this is applied on startup).
 
@@ -40,31 +40,28 @@ If you'd like to save the result, press {{{enter}}}. It will refresh things, so 
 Please note that if {{{MathQuill}}} doesn't support some ~LaTeX bits used in a formula, it will show it blank; trying to paste unsupported ~LaTeX results in no change (not pasted).
 ***/
 //{{{
-var libs = {
-//	jsMath: 1,	// not supported in this version as a deprecated solution
-	MathJax: 2,
-	KaTeX: 3,
-	jqMath: 4,
-	MathQuill: 5,
-}
-var defaultLib = 'KaTeX'
-
-// config:
-config.options.txtMathLib = config.options.txtMathLib || defaultLib
-var selectedLib = libs[config.options.txtMathLib]
 var libsConfig = {
+	// jsMath is not supported in this version as a deprecated solution
 	MathJax: {
 		libPath: 'http://cdn.mathjax.org/mathjax/latest/'
 	},
 	KaTeX: {
 		libPath: 'https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/'
 	},
+	jqMath: {
+	},
 	MathQuill: {
 		libPath: 'https://cdnjs.cloudflare.com/ajax/libs/mathquill/0.10.1/'
 	}
 }
+
+var defaultLib = 'KaTeX'
+config.options.txtMathLib = config.options.txtMathLib || defaultLib
+var selectedLib = libsConfig[config.options.txtMathLib]
+
 var getLibPath = function(lib) {
 	if(config.options.txtMathLibPath) return config.options.txtMathLibPath
+
 	if(!lib) lib = config.options.txtMathLib
 	if(!libsConfig[lib]) lib = defaultLib
 	return libsConfig[lib].libPath
@@ -84,6 +81,9 @@ config.options.txtMathLibPath = config.options.txtMathLibPath || getLibPath()
 
 // a helper
 var loadLib = function(path, config) {
+	// jQuery.getScript requires xhr, so won't work locally (through file://)
+	// http://stackoverflow.com/questions/7718935/load-scripts-asynchronously
+
 	// create the script element and add it
 	var script = document.createElement("script");
 	script.type = "text/javascript";
@@ -113,27 +113,25 @@ var loadCSS = function(path) {
 // =================================================================
 
 switch(selectedLib) {
-	case libs.MathJax:
+	case libsConfig.MathJax:
 		var mjConfig =
-		'MathJax.Hub.Config({' +
-			'jax: ["input/TeX","output/HTML-CSS"],' +
-			'extensions: ["TeX/AMSmath.js", "TeX/AMSsymbols.js"],' +
-			'"HTML-CSS": {' +
-				'scale: 115' +
-			'}' +
-		'});' +
-		'MathJax.Hub.Startup.onload();'
+			'MathJax.Hub.Config({' +
+				'jax: ["input/TeX","output/HTML-CSS"],' +
+				'extensions: ["TeX/AMSmath.js", "TeX/AMSsymbols.js"],' +
+				'"HTML-CSS": {' +
+					'scale: 115' +
+				'}' +
+			'});' +
+			'MathJax.Hub.Startup.onload();'
 
 		loadLib(getLibPath() + "MathJax.js", mjConfig)
 	break;
-	case libs.KaTeX:
+	case libsConfig.KaTeX:
 		var kaTeXpath = getLibPath()
-		loadLib(kaTeXpath + "katex.min.js"); // jQuery.getScript requires xhr, so won't work locally (through file://)
-		// http://stackoverflow.com/questions/7718935/load-scripts-asynchronously
-
+		loadLib(kaTeXpath + "katex.min.js")
 		loadCSS(kaTeXpath + "katex.min.css")
 	break;
-	case libs.MathQuill:
+	case libsConfig.MathQuill:
 		var mathQuillPath = getLibPath()
 		loadLib(mathQuillPath + "mathquill.min.js")
 		var loadMQ = function() { try{
@@ -183,7 +181,7 @@ config.formatterHelpers.mathFormatHelper = function(w) {
 	if(!matched) return
 
 	var e = document.createElement(this.element);
-	if(selectedLib == libs.MathJax)
+	if(selectedLib == libsConfig.MathJax)
 		e.type = this.inline ? "math/tex" : "math/tex; mode=display";
 	var latex = w.source.substr(w.matchStart + w.matchLength,
 		matched.index - w.matchStart - w.matchLength);
@@ -198,9 +196,9 @@ latex = latex.replace(/\\?π/mg, "\\pi").replace("×", "\\times").replace("∞",
 	else
 		e.text = latex;
 	w.output.appendChild(e);
-	if(selectedLib == libs.jqMath)
+	if(selectedLib == libsConfig.jqMath)
 		M.parseMath(e);
-	if(selectedLib == libs.KaTeX)
+	if(selectedLib == libsConfig.KaTeX)
 		try {
 			katex.render(latex, e, {
 				displayMode: !this.inline,
@@ -212,7 +210,7 @@ latex = latex.replace(/\\?π/mg, "\\pi").replace("×", "\\times").replace("∞",
 				console.log("katex exception:");
 			console.log(e);
 		}
-	if(selectedLib == libs.MathQuill)
+	if(selectedLib == libsConfig.MathQuill)
 	{ try{
 		var mqEditor = config.extensions.mathQuill.MathField(e, {
 			spaceBehavesLikeTab: true, // ??
@@ -250,9 +248,9 @@ var mainMathFormatters = [
 		match: "\\\$\\\$",
 		terminator: "\\\$\\\$\\n?",
 		termRegExp: "\\\$\\\$\\n?",
-		element: (selectedLib == libs.MathJax ? "script" : "div"),
+		element: (selectedLib == libsConfig.MathJax ? "script" : "div"),
 		inline: false,
-		keepdelim: (selectedLib == libs.jqMath),
+		keepdelim: (selectedLib == libsConfig.jqMath),
 		handler: config.formatterHelpers.mathFormatHelper
 	},{
 		name: "inlineMath1",
@@ -263,9 +261,9 @@ var mainMathFormatters = [
 		match: "\\\$", 
 		terminator: "\\\$",
 		termRegExp: "\\\$",
-		element: (selectedLib == libs.MathJax ? "script" : "span"),
+		element: (selectedLib == libsConfig.MathJax ? "script" : "span"),
 		inline: true,
-		keepdelim: (selectedLib == libs.jqMath),
+		keepdelim: (selectedLib == libsConfig.jqMath),
 		handler: config.formatterHelpers.mathFormatHelper
 	}
 ];
@@ -280,9 +278,9 @@ var backslashFormatters = [
 		match: "\\\\\\\(",
 		terminator: "\\\\\\\)",
 		termRegExp: "\\\\\\\)",
-		element: (selectedLib == libs.MathJax ? "script" : "span"),
+		element: (selectedLib == libsConfig.MathJax ? "script" : "span"),
 		inline: true,
-		keepdelim: (selectedLib == libs.jqMath),
+		keepdelim: (selectedLib == libsConfig.jqMath),
 		handler: config.formatterHelpers.mathFormatHelper
 	},{
 		name: "displayMath2",
@@ -293,9 +291,9 @@ var backslashFormatters = [
 		match: "\\\\\\\[",
 		terminator: "\\\\\\\]\\n?",
 		termRegExp: "\\\\\\\]\\n?",
-		element: (selectedLib == libs.MathJax ? "script" : "div"),
+		element: (selectedLib == libsConfig.MathJax ? "script" : "div"),
 		inline: false,
-		keepdelim: (selectedLib == libs.jqMath),
+		keepdelim: (selectedLib == libsConfig.jqMath),
 		handler: config.formatterHelpers.mathFormatHelper
 	},{
 		name: "displayMath3",
@@ -306,9 +304,9 @@ var backslashFormatters = [
 		match: "\\\\begin\\{equation\\}",
 		terminator: "\\\\end\\{equation\\}\\n?",
 		termRegExp: "\\\\end\\{equation\\}\\n?",
-		element: (selectedLib == libs.MathJax ? "script" : "div"),
+		element: (selectedLib == libsConfig.MathJax ? "script" : "div"),
 		inline: false,
-		keepdelim: (selectedLib == libs.jqMath),
+		keepdelim: (selectedLib == libsConfig.jqMath),
 		handler: config.formatterHelpers.mathFormatHelper
 	},{
 		// These can be nested.  e.g. \begin{equation} \begin{array}{ccc} \begin{array}{ccc} ...
@@ -321,7 +319,7 @@ var backslashFormatters = [
 		match: "\\\\begin\\{eqnarray\\}",
 		terminator: "\\\\end\\{eqnarray\\}\\n?",
 		termRegExp: "\\\\end\\{eqnarray\\}\\n?",
-		element: (selectedLib == libs.MathJax ? "script" : "div"),
+		element: (selectedLib == libsConfig.MathJax ? "script" : "div"),
 		inline: false,
 		keepdelim: true,
 		handler: config.formatterHelpers.mathFormatHelper
@@ -344,7 +342,7 @@ config.formatters = config.formatters.concat(mainMathFormatters, backslashFormat
 // if the plugin is loaded via TIFP or other async means, formatter may be set already
 if(formatter) formatter = new Formatter(config.formatters)
 
-if(selectedLib == libs.MathJax) {
+if(selectedLib == libsConfig.MathJax) {
 	old_wikify = wikify
 	wikify = function(source, output, highlightRegExp, tiddler) {
 		old_wikify.apply(this, arguments)
@@ -357,9 +355,9 @@ if(selectedLib == libs.MathJax) {
 // =================================================================
 
 switch(selectedLib) {
-	case libs.jqMath:    setStylesheet(store.getTiddlerText("JQMath.css"), "jqMathStyles")
+	case libsConfig.jqMath:    setStylesheet(store.getTiddlerText("JQMath.css"), "jqMathStyles")
 		break;
-	case libs.MathQuill: setStylesheet(mathQuillCssExtras, "mathQuillCssExtras")
+	case libsConfig.MathQuill: setStylesheet(mathQuillCssExtras, "mathQuillCssExtras")
 		break;
 }
 })();
