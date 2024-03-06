@@ -28,9 +28,16 @@ This can be inserted via the {{{$$ ... $$}}} and {{{\[ ... \]}}} wrappers. Note 
 {{DDnc{startup vs reload tiddlers}}}
 
 !!!Cross-library compatibility
-Different libraries implement different subsets of ~LaTeX, so it's not like you can use any of them for any formula. ~MathJax presumably still supports a larger subset, but ~KaTeX is greatly faster, so this is the default option.
+Different libraries implement different subsets of ~LaTeX, so it's not like you can use any of them for any formula. {{{MathJax}}} presumably still supports a larger subset, but {{{KaTeX}}} is greatly faster, so this is the default option.
 
-{{PoGc{describe ~WYSIWYGish libs}}}
+{{{MathQuill}}} implements ~WYSIWYGish editing, but doesn't implement many advanced ~LaTeX commands like {{{ {n \choose k} }}}.
+
+!!!WYSIWYG with {{{MathQuill}}}
+To edit a formula with {{{MathQuill}}}, simply click inside the box (create an empty one with {{{$ $}}} → $ $) and start typing (use arrows to navigate, try pressing {{{a}}}, {{{^}}}, {{{delete}}} to see how such bits are managed, also try selecting things using shift and arrows).
+
+If you'd like to save the result, press {{{enter}}}. It will refresh things, so don't keep several unsaved drafts at the same time.
+
+Please note that if {{{MathQuill}}} doesn't support some ~LaTeX bits used in a formula, it will show it blank; trying to paste unsupported ~LaTeX results in no change (not pasted).
 ***/
 //{{{
 var libs = {
