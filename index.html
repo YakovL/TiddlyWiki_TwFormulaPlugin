@@ -531,7 +531,7 @@ noscript {display:none;} /* Fixes a feature in Firefox 1.5.0.2 where print previ
 <div title="TiddlerInFilePlugin" modifier="Yakov Litvin" created="201808191403" modified="202212060812" tags="systemConfig" changecount="274" content-type="text/javascript">
 <pre>/***
 |Description|Allows to store any number of tiddlers as external files and more|
-|Version|1.1.2|
+|Version|1.1.3|
 |Source|https://github.com/YakovL/TiddlyWiki_TiddlerInFilePlugin|
 |Author|Yakov Litvin|
 |License|MIT|
@@ -712,7 +712,7 @@ config.macros.external = {
 
 			eval(tiddler.text);
 			// for plugins introducing macros, formatters etc (may be adjusted in the future)
-			story.refreshAllTiddlers();
+			refreshAll();
 		}
 		//meta.lastLoaded = responseText;
 	},
