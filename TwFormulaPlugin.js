@@ -179,21 +179,21 @@ var changeWikiText = function(sourceTiddler, startPosition, oldLatexLength, open
 
 config.formatterHelpers.mathFormatHelper = function(w) {
 
-	var endRegExp = new RegExp(this.terminator, "mg");
-	endRegExp.lastIndex = w.matchStart + w.matchLength;
-	var matched = endRegExp.exec(w.source);
-	if(!matched) return
+	var endRegExp = new RegExp(this.terminator, "mg")
+	endRegExp.lastIndex = w.matchStart + w.matchLength
+	var match = endRegExp.exec(w.source)
+	if(!match) return
+
+	var latex = this.keepdelim ?
+		w.source.substr(w.matchStart, match.index + match[0].length - w.matchStart) :
+		w.source.substr(w.matchStart + w.matchLength, match.index - w.matchStart - w.matchLength);
+
+// pre-parsing can be done here
+latex = latex.replace(/\\?π/mg, "\\pi").replace("×", "\\times").replace("∞", "\\infty");
 
 	var e = document.createElement(this.element);
 	if(selectedLib == libsConfig.MathJax)
 		e.type = this.inline ? "math/tex" : "math/tex; mode=display";
-	var latex = w.source.substr(w.matchStart + w.matchLength,
-		matched.index - w.matchStart - w.matchLength);
-	if(this.keepdelim)
-		latex = w.source.substr(w.matchStart, matched.index + matched[0].length - w.matchStart);
-
-// pre-parsing can be done here
-latex = latex.replace(/\\?π/mg, "\\pi").replace("×", "\\times").replace("∞", "\\infty");
 
 	if(UseInnerHTML)
 		e.innerHTML = latex;
@@ -239,7 +239,7 @@ latex = latex.replace(/\\?π/mg, "\\pi").replace("×", "\\times").replace("∞",
 		});
 	} catch(e) { console.log("MathQuill formatter: " + e.message) } }
 
-	w.nextMatch = endRegExp.lastIndex;
+	w.nextMatch = endRegExp.lastIndex
 };
 
 var mainMathFormatters = [
