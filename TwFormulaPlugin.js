@@ -1,7 +1,7 @@
 /***
 |Name       |TwFormulaPlugin|
 |Description|Render beautiful formulas using LaTeX syntax in wrappers like {{{$$...$$}}}. Plugin supports different libraries for that (MathJax, KaTeX, jqMath, MathQuill) – the supported LaTeX subset and some features depend on the selected library (MathQuill provides WYSIWYGish editing) {{DDnc{''retest''}}}|
-|Version    |0.7.1|
+|Version    |0.7.2|
 |Source     |https://github.com/YakovL/TiddlyWiki_TwFormulaPlugin/blob/master/TwFormulaPlugin.js|
 |Demo       |https://YakovL.github.io/TiddlyWiki_TwFormulaPlugin|
 |Previous contributors|Forked from ~PluginMathJax v1.3, by an anonymous author (called themselves "[[Canada East|http://tiddlywiki.canada-east.ca/]]"); jqMath was added thanks to [[this|https://groups.google.com/forum/#!topic/tiddlywiki/PNXaylx1HRY]] thread and the prototype provied by Eric Schulman|
@@ -174,10 +174,10 @@ var changeWikiText = function(sourceTiddler, startPosition, oldLatexLength, open
 };
 
 // =================================================================
-//	   Define formatters and hijack wikifying for latex
+//	   Define formatters and decorate wikifying for latex
 // =================================================================
 
-config.formatterHelpers.mathFormatHelper = function(w) {
+config.formatterHelpers.matchAndDisplayMath = function(w) {
 
 	var endRegExp = new RegExp(this.terminator, "mg")
 	endRegExp.lastIndex = w.matchStart + w.matchLength
@@ -191,56 +191,69 @@ config.formatterHelpers.mathFormatHelper = function(w) {
 // pre-parsing can be done here
 latex = latex.replace(/\\?π/mg, "\\pi").replace("×", "\\times").replace("∞", "\\infty");
 
-	var e = document.createElement(this.element);
+	config.formatterHelpers.displayMath(latex, w.output, this.element, this.inline, {
+		tiddler: w.tiddler,
+		matchStartPos: w.matchStart,
+		openWrapper: this.openWrapper,
+		closeWrapper: this.closeWrapper
+	})
+
+	w.nextMatch = endRegExp.lastIndex
+}
+
+config.formatterHelpers.displayMath = function(latex, place, elementName, isInline, editParams) {
+	var e = document.createElement(elementName)
 	if(selectedLib == libsConfig.MathJax)
-		e.type = this.inline ? "math/tex" : "math/tex; mode=display";
+		e.type = isInline ? "math/tex" : "math/tex; mode=display"
 
 	if(UseInnerHTML)
 		e.innerHTML = latex;
 	else
 		e.text = latex;
-	w.output.appendChild(e);
-	if(selectedLib == libsConfig.jqMath)
-		M.parseMath(e);
-	if(selectedLib == libsConfig.KaTeX)
-		try {
-			katex.render(latex, e, {
-				displayMode: !this.inline,
-				throwOnError: false,
-				errorColor: "#ff0000"
-			});
-		} catch(e) {
-			if(!(e.message == "katex is not defined"))
-				console.log("katex exception:");
-			console.log(e);
-		}
-	if(selectedLib == libsConfig.MathQuill)
-	{ try{
-		var mqEditor = config.extensions.mathQuill.MathField(e, {
-			spaceBehavesLikeTab: true, // ??
-			handlers: {
-				edit: function() {
-					// do onchange stuff here
-					// use mathQuillEditor.latex()
-					//  to either set or get latex
-				}
+	place.appendChild(e);
+
+	switch(selectedLib) {
+		case libsConfig.KaTeX:
+			try {
+				katex.render(latex, e, {
+					displayMode: !isInline,
+					throwOnError: false,
+					errorColor: "#ff0000"
+				})
+			} catch(e) {
+				if(!(e.message == "katex is not defined")) console.log("katex exception:")
+				console.log(e)
 			}
-		});
-		mqEditor.latex(latex);
+		break
+		case libsConfig.jqMath:
+			M.parseMath(e)
+		break
+		case libsConfig.MathQuill:
+			try{
+				var mqEditor = config.extensions.mathQuill.MathField(e, {
+					spaceBehavesLikeTab: true, // ??
+					handlers: {
+						edit: function() {
+							// do onchange stuff here
+							// use mathQuillEditor.latex()
+							//  to either set or get latex
+						}
+					}
+				})
+				mqEditor.latex(latex)
 
-		var tid = w.tiddler,
-			startPos = w.matchStart,
-			openWrapper = this.openWrapper,
-			closeWrapper = this.closeWrapper;
-		jQuery(e).keydown(function(e) {
-			// on press enter, apply changes
-			if(e.key == 'Enter')
-				changeWikiText(tid, startPos, latex.length, openWrapper, closeWrapper, mqEditor.latex())
-		});
-	} catch(e) { console.log("MathQuill formatter: " + e.message) } }
-
-	w.nextMatch = endRegExp.lastIndex
-};
+				// on press enter, apply changes
+				jQuery(e).keydown(function(e) {
+					if(e.key == 'Enter')
+						changeWikiText(editParams.tiddler, editParams.matchStartPos, latex.length,
+							editParams.openWrapper, editParams.closeWrapper, mqEditor.latex())
+				})
+			} catch(e) {
+				console.log("MathQuill formatter: " + e.message)
+			}
+		break
+	}
+}
 
 var mainMathFormatters = [
 	{
@@ -255,7 +268,7 @@ var mainMathFormatters = [
 		element: (selectedLib == libsConfig.MathJax ? "script" : "div"),
 		inline: false,
 		keepdelim: (selectedLib == libsConfig.jqMath),
-		handler: config.formatterHelpers.mathFormatHelper
+		handler: config.formatterHelpers.matchAndDisplayMath
 	},{
 		name: "inlineMath1",
 		// used for editing, would be nice to generate from it:
@@ -268,7 +281,7 @@ var mainMathFormatters = [
 		element: (selectedLib == libsConfig.MathJax ? "script" : "span"),
 		inline: true,
 		keepdelim: (selectedLib == libsConfig.jqMath),
-		handler: config.formatterHelpers.mathFormatHelper
+		handler: config.formatterHelpers.matchAndDisplayMath
 	}
 ];
 
@@ -285,7 +298,7 @@ var backslashFormatters = [
 		element: (selectedLib == libsConfig.MathJax ? "script" : "span"),
 		inline: true,
 		keepdelim: (selectedLib == libsConfig.jqMath),
-		handler: config.formatterHelpers.mathFormatHelper
+		handler: config.formatterHelpers.matchAndDisplayMath
 	},{
 		name: "displayMath2",
 		// used for editing, would be nice to generate from it: match
@@ -298,7 +311,7 @@ var backslashFormatters = [
 		element: (selectedLib == libsConfig.MathJax ? "script" : "div"),
 		inline: false,
 		keepdelim: (selectedLib == libsConfig.jqMath),
-		handler: config.formatterHelpers.mathFormatHelper
+		handler: config.formatterHelpers.matchAndDisplayMath
 	},{
 		name: "displayMath3",
 		// used for editing, would be nice to generate from it: match
@@ -311,7 +324,7 @@ var backslashFormatters = [
 		element: (selectedLib == libsConfig.MathJax ? "script" : "div"),
 		inline: false,
 		keepdelim: (selectedLib == libsConfig.jqMath),
-		handler: config.formatterHelpers.mathFormatHelper
+		handler: config.formatterHelpers.matchAndDisplayMath
 	},{
 		// These can be nested.  e.g. \begin{equation} \begin{array}{ccc} \begin{array}{ccc} ...
 
@@ -326,7 +339,7 @@ var backslashFormatters = [
 		element: (selectedLib == libsConfig.MathJax ? "script" : "div"),
 		inline: false,
 		keepdelim: true,
-		handler: config.formatterHelpers.mathFormatHelper
+		handler: config.formatterHelpers.matchAndDisplayMath
 	},{
 		// The escape must come between backslash formatters and regular ones.
 		// So any latex-like \commands must be added to the beginning of
