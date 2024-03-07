@@ -233,9 +233,9 @@ latex = latex.replace(/\\?π/mg, "\\pi").replace("×", "\\times").replace("∞",
 			openWrapper = this.openWrapper,
 			closeWrapper = this.closeWrapper;
 		jQuery(e).keydown(function(e) {
-			if(e.which == 13) // on press enter, apply changes
+			// on press enter, apply changes
+			if(e.key == 'Enter')
 				changeWikiText(tid, startPos, latex.length, openWrapper, closeWrapper, mqEditor.latex())
-
 		});
 	} catch(e) { console.log("MathQuill formatter: " + e.message) } }
 
