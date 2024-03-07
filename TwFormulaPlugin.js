@@ -126,12 +126,12 @@ switch(selectedLib) {
 			'MathJax.Hub.Startup.onload();'
 
 		loadLib(getLibPath() + "MathJax.js", mjConfig)
-	break;
+	break
 	case libsConfig.KaTeX:
 		var kaTeXpath = getLibPath()
 		loadLib(kaTeXpath + "katex.min.js")
 		loadCSS(kaTeXpath + "katex.min.css")
-	break;
+	break
 	case libsConfig.MathQuill:
 		var mathQuillPath = getLibPath()
 		loadLib(mathQuillPath + "mathquill.min.js")
@@ -145,7 +145,7 @@ switch(selectedLib) {
 			"div.mq-editable-field { display: block; text-align: center; }\n"+
 			"   .mq-editable-field { border: thin solid #cccccc; }"
 		setStylesheet(mathQuillCssExtras, "mathQuillCssExtras")
-	break;
+	break
 
 	case libsConfig.jqMath:
 		setStylesheet(store.getTiddlerText("JQMath.css"), "jqMathStyles")
@@ -283,7 +283,7 @@ var mainMathFormatters = [
 		keepdelim: (selectedLib == libsConfig.jqMath),
 		handler: config.formatterHelpers.matchAndDisplayMath
 	}
-];
+]
 
 var backslashFormatters = [
 	{
@@ -353,7 +353,7 @@ var backslashFormatters = [
 			w.nextMatch = w.matchStart + 2 // 2 = length of \.
 		}
 	}
-];
+]
 
 config.formatters = config.formatters.concat(mainMathFormatters, backslashFormatters)
 // if the plugin is loaded via TIFP or other async means, formatter may be set already
@@ -367,5 +367,5 @@ if(selectedLib == libsConfig.MathJax) {
 	};
 }
 
-})();
+})()
 //}}}
