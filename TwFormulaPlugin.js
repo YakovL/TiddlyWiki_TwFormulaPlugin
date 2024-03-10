@@ -13,8 +13,9 @@ Install the plugin as usual (copy with the {{{systemConfig}}} tag, reload). By d
 
 //If you'd like to use another supported library,//
 # put one of the lib names (listed in code in {{{libsConfig}}}) here: <<option txtMathLib>> {{DDnc{implement a select for an option macro instead}}};
-# get the files from _ {{DDnc{explain, where}}}, put them in _ {{DDnc{explain, where}}};
+# get the files from the official site ([[MathJax.zip|https://github.com/mathjax/MathJax/archive/master.zip]], [[MathQuill releases|https://github.com/mathquill/mathquill/releases]], for [[jqMath|https://mathscribe.com/author/jqmath.html]], look for "donwload" on its page), put them into a local folder and set the path (see the explanation for ~KaTeX above);
 # reload TW (this is applied on startup).
+{{DDnc{fix: won't work for jqMath yet}}}
 
 !!!Usage and examples
 The plugin introduces several formatters to write math. For instance $a^2 + b^2$ is an inline formula, which can be written as {{{$ a^2 + b^2 $}}} and {{{\( a^2 + b^2 \)}}} (spaces are optional: {{{$a^2 + b^2$}}} will produce the same result). To write an ordinary {{{$}}}, write {{{\$}}} {{DDnc{make optional backward compatibility (disabling .. formatter)?}}}
@@ -37,7 +38,7 @@ Please note that if {{{MathQuill}}} doesn't support some ~LaTeX bits used in a f
 ***/
 //{{{
 // =================================================================
-//			   Configure lib and path, install only once
+//             Configure lib and path, install only once
 // =================================================================
 
 var libsConfig = {
@@ -155,7 +156,7 @@ switch(selectedLib) {
 }
 
 // =================================================================
-//	   Define helpers for wikitext editing through WYSIWYG
+//       Define helpers for wikitext editing through WYSIWYG
 // =================================================================
 
 var changeWikiText = function(sourceTiddler, startPosition, oldLatexLength, openWrapper, closeWrapper, newLatex) {
@@ -175,7 +176,7 @@ var changeWikiText = function(sourceTiddler, startPosition, oldLatexLength, open
 };
 
 // =================================================================
-//	   Define formatters and decorate wikifying for latex
+//       Define formatters and decorate wikifying for latex
 // =================================================================
 
 config.formatterHelpers.matchAndDisplayMath = function(w) {
@@ -211,7 +212,7 @@ config.formatterHelpers.displayMath = function(latex, place, elementName, isInli
 		e.innerHTML = latex;
 	else
 		e.text = latex;
-	place.appendChild(e);
+	place.appendChild(e)
 
 	switch(selectedLib) {
 		case libsConfig.KaTeX:
