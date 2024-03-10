@@ -44,7 +44,7 @@ Please note that if {{{MathQuill}}} doesn't support some ~LaTeX bits used in a f
 var libsConfig = {
 	// jsMath is not supported in this version as a deprecated solution
 	MathJax: {
-		libPath: 'http://cdn.mathjax.org/mathjax/latest/'
+		libPath: 'https://cdn.mathjax.org/mathjax/latest/'
 	},
 	KaTeX: {
 		libPath: 'https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/'
