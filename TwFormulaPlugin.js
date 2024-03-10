@@ -1,7 +1,7 @@
 /***
 |Name       |TwFormulaPlugin|
 |Description|Render beautiful formulas using LaTeX syntax in wrappers like {{{$$...$$}}}. Plugin supports different libraries for that (MathJax, KaTeX, jqMath, MathQuill) – the supported LaTeX subset and some features depend on the selected library (MathQuill provides WYSIWYGish editing) {{DDnc{''retest''}}}|
-|Version    |0.7.2|
+|Version    |0.7.3|
 |Source     |https://github.com/YakovL/TiddlyWiki_TwFormulaPlugin/blob/master/TwFormulaPlugin.js|
 |Demo       |https://YakovL.github.io/TiddlyWiki_TwFormulaPlugin|
 |Previous contributors|Forked from ~PluginMathJax v1.3, by an anonymous author (called themselves "[[Canada East|http://tiddlywiki.canada-east.ca/]]"); jqMath was added thanks to [[this|https://groups.google.com/forum/#!topic/tiddlywiki/PNXaylx1HRY]] thread and the prototype provied by Eric Schulman|
@@ -22,8 +22,6 @@ The plugin introduces several formatters to write math. For instance $a^2 + b^2$
 In other cases, you may need a centered block formula like this:
 $$ P(E) = {n \choose k} p^k (1 - p)^{n - k} $$
 This can be inserted via the {{{$$ ... $$}}} and {{{\[ ... \]}}} wrappers. Note that to get \$\$ as plain text, you'll need {{{\$\$}}} (and not {{{\$$}}}).
-
-{{DDnc{startup vs reload tiddlers}}}
 
 !!!Cross-library compatibility
 Different libraries implement different subsets of ~LaTeX, so it's not like you can use any of them for any formula. {{{MathJax}}} presumably still supports a larger subset, but {{{KaTeX}}} is greatly faster, so this is the default option.
