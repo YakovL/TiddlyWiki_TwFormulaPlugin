@@ -110,8 +110,10 @@ var loadCSS = function(path) {
 */
 }
 
+var hasPendingMath = false
 var refreshAfterMathLoad = function() {
-	if(config.options.chkRefreshAfterMathLoad) refreshAll()
+	if(hasPendingMath) refreshAll()
+	hasPendingMath = false
 }
 
 switch(selectedLib) {
@@ -223,11 +225,17 @@ config.formatterHelpers.displayMath = function(latex, place, elementName, isInli
 				})
 			} catch(e) {
 				if(!(e.message == "katex is not defined")) console.log("katex exception:")
+				hasPendingMath = true
 				console.log(e)
 			}
 		break
 		case libsConfig.jqMath:
-			M.parseMath(e)
+			try{
+				M.parseMath(e)
+			} catch(er) {
+				hasPendingMath = true
+				console.log("jqMath formatter:", er)
+			}
 		break
 		case libsConfig.MathQuill:
 			try{
@@ -250,6 +258,7 @@ config.formatterHelpers.displayMath = function(latex, place, elementName, isInli
 							editParams.openWrapper, editParams.closeWrapper, mqEditor.latex())
 				})
 			} catch(e) {
+				hasPendingMath = true
 				console.log("MathQuill formatter: " + e.message)
 			}
 		break
