@@ -85,20 +85,17 @@ var selectedLib = libsConfig[config.options.txtMathLib]
 //			     Load the library and the styles
 // =================================================================
 
-var loadLib = function(path, config) {
-	// jQuery.getScript requires xhr, so won't work locally (through file://)
-	// http://stackoverflow.com/questions/7718935/load-scripts-asynchronously
+// This works locally (through file://) as well (see stackoverflow.com/q/7718935/)
+var loadJS = function(path, config, onload) {
 
-	// create the script element and add it
-	var script = document.createElement("script");
-	script.type = "text/javascript";
-	script.src = path;
+	var script = document.createElement("script")
+	script.src = path
 	
-	if(UseInnerHTML)
-		script.innerHTML = config;
-	script.text = config;
+	if(UseInnerHTML) script.innerHTML = config
+	script.text = config
+	if(onload) script.onload = onload
 
-	document.getElementsByTagName("head")[0].appendChild(script);
+	document.getElementsByTagName("head")[0].appendChild(script)
 
 	return script
 }
@@ -113,6 +110,10 @@ var loadCSS = function(path) {
 */
 }
 
+var refreshAfterMathLoad = function() {
+	if(config.options.chkRefreshAfterMathLoad) refreshAll()
+}
+
 switch(selectedLib) {
 	case libsConfig.MathJax:
 		var mjConfig =
@@ -125,16 +126,16 @@ switch(selectedLib) {
 			'});' +
 			'MathJax.Hub.Startup.onload();'
 
-		loadLib(getLibPath() + "MathJax.js", mjConfig)
+		loadJS(getLibPath() + "MathJax.js", mjConfig, refreshAfterMathLoad)
 	break
 	case libsConfig.KaTeX:
 		var kaTeXpath = getLibPath()
-		loadLib(kaTeXpath + "katex.min.js")
+		loadJS(kaTeXpath + "katex.min.js", undefined, refreshAfterMathLoad)
 		loadCSS(kaTeXpath + "katex.min.css")
 	break
 	case libsConfig.MathQuill:
 		var mathQuillPath = getLibPath()
-		loadLib(mathQuillPath + "mathquill.min.js")
+		loadJS(mathQuillPath + "mathquill.min.js", undefined, refreshAfterMathLoad)
 		var loadMQ = function() { try{
 			config.extensions.mathQuill = MathQuill.getInterface(2)
 		} catch(e) { setTimeout(loadMQ, 50) } }
