@@ -97,9 +97,11 @@ var loadJS = function(path, config, onload) {
 
 	var script = document.createElement("script")
 	script.src = path
-	
-	if(useInnerHTML) script.innerHTML = config
-	script.text = config
+
+	if(config) {
+		if(useInnerHTML) script.innerHTML = config
+		script.text = config
+	}
 	if(onload) script.onload = onload
 
 	document.getElementsByTagName("head")[0].appendChild(script)
