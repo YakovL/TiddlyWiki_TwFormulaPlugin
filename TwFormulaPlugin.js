@@ -86,7 +86,7 @@ var selectedLib = libsConfig[config.options.txtMathLib]
 	version.extensions.TwFormulaePlugin = { installed: true }
 
 	var ie9RegExp = /^9\./
-	var UseInnerHTML = (config.browser.isOpera || config.browser.isIE && ie9RegExp.test(config.browser.ieVersion[1]))
+	var useInnerHTML = (config.browser.isOpera || config.browser.isIE && ie9RegExp.test(config.browser.ieVersion[1]))
 
 // =================================================================
 //			     Load the library and the styles
@@ -98,7 +98,7 @@ var loadJS = function(path, config, onload) {
 	var script = document.createElement("script")
 	script.src = path
 	
-	if(UseInnerHTML) script.innerHTML = config
+	if(useInnerHTML) script.innerHTML = config
 	script.text = config
 	if(onload) script.onload = onload
 
@@ -216,7 +216,7 @@ config.formatterHelpers.displayMath = function(latex, place, elementName, isInli
 	if(selectedLib == libsConfig.MathJax)
 		e.type = isInline ? "math/tex" : "math/tex; mode=display"
 
-	if(UseInnerHTML)
+	if(useInnerHTML)
 		e.innerHTML = latex;
 	else
 		e.text = latex;
