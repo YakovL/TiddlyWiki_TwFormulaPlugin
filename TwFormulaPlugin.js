@@ -12,9 +12,15 @@ Install the plugin as usual (copy with the {{{systemConfig}}} tag, reload). By d
 //If you'd like to load ~KaTeX from the another source// (for instance, from a local folder), download the latest [[release|https://github.com/KaTeX/KaTeX/releases]], unpack all the files into a folder, like {{{./jsLibs/KaTeX/}}} (so that if your TW is {{{folder/TW.html}}}, the katex.min.js, for instance, is in {{{folder/jsLibs/KaTeX/katex.min.js}}}; same for {{{katex.min.css}}}, etc), and set the path <<option txtMathLibPath>> to that path or url ({{{jsLibs/KaTeX/}}} in this case).
 
 //If you'd like to use another supported library,//
-# put one of the lib names (listed in code in {{{libsConfig}}}) here: <<option txtMathLib>> {{DDnc{implement a select for an option macro instead}}};
 # get the files from the official site ([[MathJax.zip|https://github.com/mathjax/MathJax/archive/master.zip]], [[MathQuill releases|https://github.com/mathquill/mathquill/releases]]/%, for [[jqMath|https://mathscribe.com/author/jqmath.html]], look for "donwload" on its page%/), put them into a local folder and set the path (see the explanation for ~KaTeX above);
+** If you'd like to use CDN, just set the path to an empty string (it will be updated after reloading);
+# put the name of the lib to use (listed in code in {{{libsConfig}}}, except {{{jqMath}}}) here: <<option txtMathLib>>;
 # reload TW (this is applied on startup).
+** Make sure that after reloading both the path and the lib options are set correctly. If they are not remembered, use SystemSettings to "bake" them like this:
+{{{
+txtMathLib: MathJax
+txtMathLibPath: jsLibs/MathJax/
+}}}
 
 !!!Usage and examples
 The plugin introduces several formatters to write math. For instance $a^2 + b^2$ is an inline formula, which can be written as {{{$ a^2 + b^2 $}}} and {{{\( a^2 + b^2 \)}}} (spaces are optional: {{{$a^2 + b^2$}}} will produce the same result). To write an ordinary {{{$}}}, write {{{\$}}} {{DDnc{make optional backward compatibility (disabling .. formatter)?}}}
