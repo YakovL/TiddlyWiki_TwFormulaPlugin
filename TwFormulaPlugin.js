@@ -32,7 +32,9 @@ This can be inserted via the {{{$$ ... $$}}} and {{{\[ ... \]}}} wrappers. Note 
 !!!Cross-library compatibility
 Different libraries implement different subsets of ~LaTeX, so it's not like you can use any of them for any formula. {{{MathJax}}} presumably still supports a larger subset, but {{{KaTeX}}} is greatly faster, so this is the default option.
 
-{{{MathQuill}}} implements ~WYSIWYGish editing, but doesn't implement many advanced ~LaTeX commands like {{{ {n \choose k} }}}.
+While ~KaTeX and MathJax display an error for an unsupported ~LaTeX bits, MathQuill displays an empty box.
+
+{{{MathQuill}}} implements ~WYSIWYGish editing, but doesn't implement many advanced ~LaTeX commands like {{{ {n \choose k} }}} or {{{ {a\over b} }}} (use {{{ \frac{a}{b} }}} instead).
 
 !!!WYSIWYG with {{{MathQuill}}}
 To edit a formula with {{{MathQuill}}}, simply click inside the box (create an empty one with {{{$ $}}} → $ $) and start typing (use arrows to navigate, try pressing {{{a}}}, {{{^}}}, {{{delete}}} to see how such bits are managed, also try selecting things using shift and arrows).
