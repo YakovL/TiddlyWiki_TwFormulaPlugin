@@ -136,11 +136,11 @@ switch(selectedLib) {
 	break
 	case libsConfig.MathQuill:
 		var mathQuillPath = getLibPath()
-		loadJS(mathQuillPath + "mathquill.min.js", undefined, refreshAfterMathLoad)
-		var loadMQ = function() { try{
+		loadJS(mathQuillPath + "mathquill.min.js", undefined, function() {
 			config.extensions.mathQuill = MathQuill.getInterface(2)
-		} catch(e) { setTimeout(loadMQ, 50) } }
-		loadMQ()
+			refreshAfterMathLoad()
+		})
+
 		loadCSS(mathQuillPath + "mathquill.min.css")
 		// div = outline formula
 		var mathQuillCssExtras =
