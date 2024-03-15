@@ -1,21 +1,21 @@
 /***
 |Name       |TwFormulaPlugin|
-|Description|Render beautiful formulas using LaTeX syntax in wrappers like {{{$$...$$}}}. Plugin supports different libraries for that (MathJax, KaTeX, /%jqMath, %/MathQuill) – the supported LaTeX subset and some features depend on the selected library (MathQuill provides WYSIWYGish editing) {{DDnc{''retest''}}}|
+|Description|Render beautiful formulas using LaTeX syntax in wrappers like {{{$$...$$}}}. Plugin supports different libraries for that (MathJax, KaTeX, /%jqMath, %/MathQuill) – the supported LaTeX subset and some features depend on the selected library (MathQuill provides WYSIWYGish editing)|
 |Version    |0.7.4|
 |Source     |https://github.com/YakovL/TiddlyWiki_TwFormulaPlugin/blob/master/TwFormulaPlugin.js|
 |Demo       |https://YakovL.github.io/TiddlyWiki_TwFormulaPlugin|
 |Previous contributors|Forked from ~PluginMathJax v1.3, by an anonymous author (called themselves "[[Canada East|http://tiddlywiki.canada-east.ca/]]")/%; jqMath was added thanks to [[this|https://groups.google.com/forum/#!topic/tiddlywiki/PNXaylx1HRY]] thread and the prototype provied by Eric Schulman%/|
 |Notes      |The plugin was pre-released as ~TwFormula''e''Plugin, but the name was simplified for the release. It still populates {{{version.extensions.TwFormulaePlugin}}} for the "install only once" functionality.|
 !!!Installation and configuring
-Install the plugin as usual (copy with the {{{systemConfig}}} tag, reload). By default, it will use ~KaTeX from a CDN (remote server).
+__Install the plugin as usual__ (copy with the {{{systemConfig}}} tag, reload). By default, it will use ~KaTeX from a CDN (remote server).
 
-//If you'd like to load ~KaTeX from the another source// (for instance, from a local folder), download the latest [[release|https://github.com/KaTeX/KaTeX/releases]], unpack all the files into a folder, like {{{./jsLibs/KaTeX/}}} (so that if your TW is {{{folder/TW.html}}}, the katex.min.js, for instance, is in {{{folder/jsLibs/KaTeX/katex.min.js}}}; same for {{{katex.min.css}}}, etc), and set the path <<option txtMathLibPath>> to that path or url ({{{jsLibs/KaTeX/}}} in this case).
+__If you'd like to load ~KaTeX from the another source__ (for instance, from a local folder), download the latest [[release|https://github.com/KaTeX/KaTeX/releases]], unpack all the files into a folder, like {{{./jsLibs/KaTeX/}}} (so that if your TW is {{{folder/TW.html}}}, the katex.min.js, for instance, is in {{{folder/jsLibs/KaTeX/katex.min.js}}}; same for {{{katex.min.css}}}, etc), and set the path <<option txtMathLibPath>> to that path or url ({{{jsLibs/KaTeX/}}} in this case).
 
-//If you'd like to use another supported library,//
-# get the files from the official site ([[MathJax.zip|https://github.com/mathjax/MathJax/archive/master.zip]], [[MathQuill releases|https://github.com/mathquill/mathquill/releases]]/%, for [[jqMath|https://mathscribe.com/author/jqmath.html]], look for "donwload" on its page%/), put them into a local folder and set the path (see the explanation for ~KaTeX above);
-** If you'd like to use CDN, just set the path to an empty string (it will be updated after reloading);
-# put the name of the lib to use (listed in code in {{{libsConfig}}}, except {{{jqMath}}}) here: <<option txtMathLib>>;
-# reload TW (this is applied on startup).
+__If you'd like to use another supported library,__
+# Get the files from the official site ([[MathJax.zip|https://github.com/mathjax/MathJax/archive/master.zip]], [[MathQuill releases|https://github.com/mathquill/mathquill/releases]]/%, for [[jqMath|https://mathscribe.com/author/jqmath.html]], look for "donwload" on its page%/), put them into a local folder and set the path (see the explanation for ~KaTeX above);
+** If you'd like to use CDN, just set the path to an empty string instead (it will be updated after reloading);
+# Put the name of the lib to use (listed in code in {{{libsConfig}}}, except {{{jqMath}}}) here: <<option txtMathLib>>;
+# Reload TW (the options are applied on startup).
 ** Make sure that after reloading both the path and the lib options are set correctly. If they are not remembered, use SystemSettings to "bake" them like this:
 {{{
 txtMathLib: MathJax
