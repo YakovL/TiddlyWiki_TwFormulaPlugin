@@ -1,10 +1,10 @@
 /***
 |Name       |TwFormulaPlugin|
-|Description|Render beautiful formulas using LaTeX syntax in wrappers like {{{$$...$$}}}. Plugin supports different libraries for that (MathJax, KaTeX, jqMath, MathQuill) – the supported LaTeX subset and some features depend on the selected library (MathQuill provides WYSIWYGish editing) {{DDnc{''retest''}}}|
+|Description|Render beautiful formulas using LaTeX syntax in wrappers like {{{$$...$$}}}. Plugin supports different libraries for that (MathJax, KaTeX, /%jqMath, %/MathQuill) – the supported LaTeX subset and some features depend on the selected library (MathQuill provides WYSIWYGish editing) {{DDnc{''retest''}}}|
 |Version    |0.7.4|
 |Source     |https://github.com/YakovL/TiddlyWiki_TwFormulaPlugin/blob/master/TwFormulaPlugin.js|
 |Demo       |https://YakovL.github.io/TiddlyWiki_TwFormulaPlugin|
-|Previous contributors|Forked from ~PluginMathJax v1.3, by an anonymous author (called themselves "[[Canada East|http://tiddlywiki.canada-east.ca/]]"); jqMath was added thanks to [[this|https://groups.google.com/forum/#!topic/tiddlywiki/PNXaylx1HRY]] thread and the prototype provied by Eric Schulman|
+|Previous contributors|Forked from ~PluginMathJax v1.3, by an anonymous author (called themselves "[[Canada East|http://tiddlywiki.canada-east.ca/]]")/%; jqMath was added thanks to [[this|https://groups.google.com/forum/#!topic/tiddlywiki/PNXaylx1HRY]] thread and the prototype provied by Eric Schulman%/|
 |Notes      |The plugin was pre-released as ~TwFormula''e''Plugin, but the name was simplified for the release. It still populates {{{version.extensions.TwFormulaePlugin}}} for the "install only once" functionality.|
 !!!Installation and configuring
 Install the plugin as usual (copy with the {{{systemConfig}}} tag, reload). By default, it will use ~KaTeX from a CDN (remote server).
@@ -13,9 +13,8 @@ Install the plugin as usual (copy with the {{{systemConfig}}} tag, reload). By d
 
 //If you'd like to use another supported library,//
 # put one of the lib names (listed in code in {{{libsConfig}}}) here: <<option txtMathLib>> {{DDnc{implement a select for an option macro instead}}};
-# get the files from the official site ([[MathJax.zip|https://github.com/mathjax/MathJax/archive/master.zip]], [[MathQuill releases|https://github.com/mathquill/mathquill/releases]], for [[jqMath|https://mathscribe.com/author/jqmath.html]], look for "donwload" on its page), put them into a local folder and set the path (see the explanation for ~KaTeX above);
+# get the files from the official site ([[MathJax.zip|https://github.com/mathjax/MathJax/archive/master.zip]], [[MathQuill releases|https://github.com/mathquill/mathquill/releases]]/%, for [[jqMath|https://mathscribe.com/author/jqmath.html]], look for "donwload" on its page%/), put them into a local folder and set the path (see the explanation for ~KaTeX above);
 # reload TW (this is applied on startup).
-{{DDnc{fix: won't work for jqMath yet}}}
 
 !!!Usage and examples
 The plugin introduces several formatters to write math. For instance $a^2 + b^2$ is an inline formula, which can be written as {{{$ a^2 + b^2 $}}} and {{{\( a^2 + b^2 \)}}} (spaces are optional: {{{$a^2 + b^2$}}} will produce the same result). To write an ordinary {{{$}}}, write {{{\$}}} {{DDnc{make optional backward compatibility (disabling .. formatter)?}}}
