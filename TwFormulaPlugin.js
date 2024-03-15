@@ -23,7 +23,7 @@ txtMathLibPath: jsLibs/MathJax/
 }}}
 
 !!!Usage and examples
-The plugin introduces several formatters to write math. For instance $a^2 + b^2$ is an inline formula, which can be written as {{{$ a^2 + b^2 $}}} and {{{\( a^2 + b^2 \)}}} (spaces are optional: {{{$a^2 + b^2$}}} will produce the same result). To write an ordinary {{{$}}}, write {{{\$}}} {{DDnc{make optional backward compatibility (disabling .. formatter)?}}}
+The plugin introduces several formatters to write math. For instance $a^2 + b^2$ is an inline formula, which can be written as {{{$ a^2 + b^2 $}}} and {{{\( a^2 + b^2 \)}}} (spaces are optional: {{{$a^2 + b^2$}}} will produce the same result). To write an ordinary {{{$}}} or {{{\}}}, write {{{\$}}} or {{{\\}}}.
 
 In other cases, you may need a centered block formula like this:
 $$ P(E) = {n \choose k} p^k (1 - p)^{n - k} $$
