@@ -86,7 +86,7 @@ var selectedLib = libsConfig[config.options.txtMathLib]
 	version.extensions.TwFormulaePlugin = { installed: true }
 
 	var ie9RegExp = /^9\./
-	var useInnerHTML = (config.browser.isOpera || config.browser.isIE && ie9RegExp.test(config.browser.ieVersion[1]))
+	var useInnerHTML = config.browser.isIE && ie9RegExp.test(config.browser.ieVersion[1])
 
 // =================================================================
 //			     Load the library and the styles
@@ -183,7 +183,7 @@ var changeWikiText = function(sourceTiddler, startPosition, oldLatexLength, open
 
 	// recalcs slices, notify, etc.
 	store.saveTiddler(sourceTiddler)
-};
+}
 
 // =================================================================
 //       Define formatters and decorate wikifying for latex
