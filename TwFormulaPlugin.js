@@ -1,7 +1,7 @@
 /***
 |Name       |TwFormulaPlugin|
 |Description|Render beautiful formulas using LaTeX syntax in wrappers like {{{$$...$$}}}. Plugin supports different libraries for that (MathJax, KaTeX, /%jqMath, %/MathQuill) – the supported LaTeX subset and some features depend on the selected library (MathQuill provides WYSIWYGish editing)|
-|Version    |0.7.5|
+|Version    |0.7.6|
 |Author     |Yakov Litvin|
 |Source     |https://github.com/YakovL/TiddlyWiki_TwFormulaPlugin/blob/master/TwFormulaPlugin.js|
 |Demo       |https://YakovL.github.io/TiddlyWiki_TwFormulaPlugin|
@@ -121,7 +121,10 @@ var loadCSS = function(path) {
 
 var hasPendingMath = false
 var refreshAfterMathLoad = function() {
-	if(hasPendingMath) refreshAll()
+	if(hasPendingMath) {
+		refreshAll()
+		story.refreshAllTiddlers()
+	}
 	hasPendingMath = false
 }
 
