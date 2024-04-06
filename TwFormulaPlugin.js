@@ -1,7 +1,7 @@
 /***
 |Name       |TwFormulaPlugin|
 |Description|Render beautiful formulas using LaTeX syntax in wrappers like {{{$$...$$}}}. Plugin supports different libraries for that (MathJax, KaTeX, /%jqMath, %/MathQuill) – the supported LaTeX subset and some features depend on the selected library (MathQuill provides WYSIWYGish editing)|
-|Version    |0.7.6|
+|Version    |0.7.7|
 |Author     |Yakov Litvin|
 |Source     |https://github.com/YakovL/TiddlyWiki_TwFormulaPlugin/blob/master/TwFormulaPlugin.js|
 |Demo       |https://YakovL.github.io/TiddlyWiki_TwFormulaPlugin|
@@ -73,8 +73,15 @@ var getLibPath = function(lib) {
 	if(!libsConfig[lib]) lib = defaultLib
 	return libsConfig[lib].libPath
 }
-config.options.txtMathLib = config.options.txtMathLib || defaultLib
-config.options.txtMathLibPath = config.options.txtMathLibPath || getLibPath()
+if(window.tw && tw.options) {
+	var supportedLibs = []
+	for(var lib in libsConfig) if(libsConfig[lib].libPath) supportedLibs.push('{{{' + lib + '}}}')
+	tw.options.define('txtMathLib', defaultLib, 'Library to use for ~LaTeX math (one of '+ supportedLibs.join(', ') +')')
+	tw.options.define('txtMathLibPath', getLibPath(), 'Path to math library for ~LaTeX (set empty to use CDN)')
+} else {
+	config.options.txtMathLib = config.options.txtMathLib || defaultLib
+	config.options.txtMathLibPath = config.options.txtMathLibPath || getLibPath()
+}
 var selectedLib = libsConfig[config.options.txtMathLib]
 
 ;(function main() {
