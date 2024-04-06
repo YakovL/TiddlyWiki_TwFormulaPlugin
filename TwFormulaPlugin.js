@@ -139,13 +139,11 @@ switch(selectedLib) {
 	case libsConfig.MathJax:
 		var mjConfig =
 			'MathJax.Hub.Config({' +
-				'jax: ["input/TeX","output/HTML-CSS"],' +
+				'jax: ["input/TeX", "output/HTML-CSS"],' +
 				'extensions: ["TeX/AMSmath.js", "TeX/AMSsymbols.js"],' +
-				'"HTML-CSS": {' +
-					'scale: 115' +
-				'}' +
-			'});' +
-			'MathJax.Hub.Startup.onload();'
+				'"HTML-CSS": { scale: 115 }' +
+			'})' +
+			'MathJax.Hub.Startup.onload()'
 
 		loadJS(getLibPath() + "MathJax.js", mjConfig)
 	break
@@ -228,10 +226,7 @@ config.formatterHelpers.displayMath = function(latex, place, elementName, isInli
 	if(selectedLib == libsConfig.MathJax)
 		e.type = isInline ? "math/tex" : "math/tex; mode=display"
 
-	if(useInnerHTML)
-		e.innerHTML = latex;
-	else
-		e.text = latex;
+	e[useInnerHTML ? 'innerHTML' : 'text'] = latex
 	place.appendChild(e)
 
 	switch(selectedLib) {
